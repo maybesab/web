@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script>
+// Preview sandbox shim: append the document auth token to relative img srcs.
+(function(){
+  var qs = window.location.search || '';
+  function activate(){
+    document.querySelectorAll('img[data-src]').forEach(function(el){
+      if (el.getAttribute('src')) return;
+      var s = el.getAttribute('data-src'); if (!s) return;
+      el.src = (qs && s.indexOf('?') === -1 && !/^(https?:|data:|blob:)/.test(s)) ? s + qs : s;
+    });
+    if (qs) {
+      document.querySelectorAll('img[src]').forEach(function(el){
+        var s = el.getAttribute('src');
+        if (!s || /^(https?:|data:|blob:)/.test(s) || s.indexOf('?') !== -1) return;
+        el.setAttribute('src', s + qs);
+      });
+    }
+  }
+  if (document.readyState === 'complete') activate(); else window.addEventListener('load', activate);
+})();
+</script>
+<title>Art Gallery Exhibit · Sabrina May</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--offwhite);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{line-height:1.5}
+a{color:inherit;text-decoration:none}
+:root{
+  --offwhite:#FAF7F8; --paper:#F0EAF4;
+  --ink:#1E1A2E; --deep:#15101F;
+  --violet:#7C5CFF; --cyan:#23C2D6; --gold:#F2A93B; --magenta:#E0519A;
+  --plum:#5A4E72;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Inter', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+/* Nav */
+.case-nav{ display:flex; align-items:center; gap:18px; justify-content:space-between; padding:20px clamp(28px,7vw,128px); position:sticky; top:0; z-index:50; background:rgba(250,247,248,0.85); backdrop-filter:blur(14px) saturate(140%); -webkit-backdrop-filter:blur(14px) saturate(140%); border-bottom:1px solid rgba(30,26,46,0.08); }
+.case-nav .back{ display:inline-flex; align-items:center; gap:10px; font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--ink); padding:10px 16px 10px 12px; border-radius:999px; border:1px solid rgba(30,26,46,0.15); transition:background .25s,color .25s,transform .25s; white-space:nowrap; }
+.case-nav .back:hover{ background:var(--ink); color:var(--offwhite); transform:translateX(-2px); }
+.case-nav .back svg{ width:14px; height:14px; transition:transform .3s; }
+.case-nav .back:hover svg{ transform:translateX(-3px); }
+.case-nav .toc{ display:flex; gap:2px; flex:1; justify-content:center; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum); }
+.case-nav .toc a{ position:relative; padding:6px 9px; border-radius:4px; opacity:.75; transition:color .2s,opacity .2s; }
+.case-nav .toc a:hover{ opacity:1; }
+.case-nav .toc a::after{ content:""; position:absolute; left:9px; right:9px; bottom:-1px; height:2px; background:linear-gradient(90deg,var(--violet),var(--cyan)); border-radius:2px; transform:scaleX(0); transform-origin:center; transition:transform .35s cubic-bezier(.65,0,.35,1); }
+.case-nav .toc a.is-active{ opacity:1; }
+.case-nav .toc a.is-active::after{ transform:scaleX(1); }
+@media (max-width:1080px){ .case-nav .toc{ display:none; } }
+.case-nav .brand{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:16px; color:var(--ink); white-space:nowrap; }
+/* Scroll tracker: hue-shifting light orb */
+.scroll-tracker{ position:fixed; left:26px; top:0; bottom:0; z-index:80; pointer-events:none; opacity:0; transition:opacity .5s ease .2s; }
+.scroll-tracker.is-ready{ opacity:1; }
+.scroll-tracker .st-rail{ position:absolute; left:15px; top:104px; bottom:104px; width:2px; border-radius:2px; background:linear-gradient(180deg,var(--violet),var(--cyan),var(--gold)); opacity:.3; }
+.scroll-tracker .st-fill{ position:absolute; left:15px; top:104px; width:2px; border-radius:2px; height:calc((100% - 208px) * var(--st-pos,0)); background:linear-gradient(180deg,var(--violet),var(--cyan),var(--gold)); }
+.scroll-tracker .st-thumb{ position:absolute; left:6px; top:104px; transform:translate(-50%,-50%); transition:top .12s linear; }
+.scroll-tracker .st-orb{ width:20px; height:20px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #fff, var(--orb,#7C5CFF) 70%); box-shadow:0 0 14px 3px var(--orb,#7C5CFF); }
+.scroll-tracker .st-pct{ position:absolute; left:20px; top:50%; transform:translateY(-50%); font-family:var(--mono); font-size:10px; letter-spacing:0.14em; color:var(--plum); font-weight:600; white-space:nowrap; }
+@media (max-width:1080px){ .scroll-tracker .st-pct{ display:none; } .scroll-tracker{ left:10px; } }
+@media (max-width:720px){ .scroll-tracker{ display:none; } }
+/* Hero */
+.case-hero{ padding:clamp(56px,9vw,116px) clamp(28px,7vw,128px) clamp(32px,4vw,56px); max-width:1280px; margin:0 auto; }
+.case-hero .eyebrow{ display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--violet); margin-bottom:26px; }
+.case-hero .eyebrow::before{ content:""; width:32px; height:1px; background:var(--violet); opacity:.6; }
+.hero-row{ display:flex; align-items:center; gap:clamp(18px,3vw,40px); flex-wrap:wrap; }
+.case-hero h1{ font-family:var(--serif); font-weight:900; font-size:clamp(48px,8vw,120px); line-height:0.95; letter-spacing:-0.02em; }
+.case-hero h1 .spectrum{ background:linear-gradient(90deg,var(--violet),var(--magenta),var(--gold),var(--cyan),var(--violet)); background-size:300% 100%; -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; animation:spectrumShift 8s linear infinite; }
+@keyframes spectrumShift{ 0%{ background-position:0% 50%; } 100%{ background-position:300% 50%; } }
+.case-hero h1 .ink{ color:var(--ink); }
+@media (prefers-reduced-motion: reduce){ .case-hero h1 .spectrum{ animation:none; } }
+/* Animated prism */
+.prism{ width:clamp(68px,8vw,108px); height:clamp(68px,8vw,108px); flex:0 0 auto; }
+.prism svg{ width:100%; height:100%; display:block; overflow:visible; }
+.prism .tri{ fill:none; stroke:var(--ink); stroke-width:3; stroke-linejoin:round; }
+.prism .beam-in{ stroke:var(--ink); stroke-width:3; opacity:.5; }
+.prism .ray{ stroke-width:3; stroke-linecap:round; opacity:0; animation:rayFan 4s ease-in-out infinite; }
+.prism .r1{ stroke:var(--magenta); animation-delay:.1s; } .prism .r2{ stroke:var(--gold); animation-delay:.22s; } .prism .r3{ stroke:#3DD68C; animation-delay:.34s; } .prism .r4{ stroke:var(--cyan); animation-delay:.46s; } .prism .r5{ stroke:var(--violet); animation-delay:.58s; }
+@keyframes rayFan{ 0%,12%{ opacity:0; stroke-dashoffset:40; } 40%,72%{ opacity:1; stroke-dashoffset:0; } 100%{ opacity:0; stroke-dashoffset:40; } }
+@media (prefers-reduced-motion: reduce){ .prism .ray{ opacity:1; animation:none; stroke-dashoffset:0; } }
+.case-hero .tagline{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:clamp(20px,2.4vw,32px); color:var(--violet); line-height:1.3; margin-top:22px; max-width:28ch; }
+/* Meta */
+.case-cover{ max-width:1280px; margin:0 auto; padding:0 clamp(28px,7vw,128px); }
+.case-meta{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px 32px; padding-top:28px; border-top:1px solid rgba(30,26,46,0.15); max-width:1100px; }
+.case-meta dt{ font-family:var(--mono); font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--plum); opacity:.7; margin-bottom:8px; }
+.case-meta dd{ font-family:var(--serif); font-weight:500; font-size:clamp(14px,1.2vw,17px); color:var(--ink); }
+.case-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.case-actions a{ display:inline-flex; align-items:center; gap:9px; padding:11px 18px; border-radius:999px; border:1px solid rgba(30,26,46,0.18); font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--ink); transition:background .3s,color .3s,transform .3s; }
+.case-actions a:hover{ background:var(--violet); border-color:var(--violet); color:#fff; transform:translateY(-2px); }
+.case-actions a svg{ width:14px; height:14px; }
+@media (max-width:760px){ .case-meta{ grid-template-columns:1fr 1fr; } }
+/* Cover banner */
+.ag-cover{ width:100%; margin:clamp(40px,5vw,64px) 0 0; }
+.ag-cover-banner{ position:relative; width:100%; min-height:clamp(240px,30vw,400px); overflow:hidden; display:flex; align-items:center; justify-content:center; background:radial-gradient(60% 120% at 20% 10%,rgba(124,92,255,0.5),transparent 60%),radial-gradient(60% 120% at 80% 90%,rgba(35,194,214,0.45),transparent 60%),radial-gradient(50% 90% at 60% 30%,rgba(242,169,59,0.35),transparent 60%),linear-gradient(150deg,#241B3A,#15101F); }
+.ag-cover-banner::before{ content:""; position:absolute; inset:0; background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,0.06) 50%,transparent 65%); }
+.ag-cover-banner .lab{ position:relative; font-family:var(--mono); font-size:11px; letter-spacing:0.28em; text-transform:uppercase; color:rgba(255,255,255,0.82); padding:9px 16px; border:1px solid rgba(255,255,255,0.25); border-radius:999px; background:rgba(255,255,255,0.06); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+/* Sections */
+.ag-section{ max-width:1180px; margin:0 auto; padding:clamp(56px,7vw,104px) clamp(28px,7vw,128px) 0; }
+.ag-eyebrow{ display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--violet); margin-bottom:18px; }
+.ag-eyebrow::before{ content:""; width:30px; height:1px; background:var(--violet); opacity:.7; }
+.ag-h2{ font-family:var(--serif); font-weight:700; font-size:clamp(28px,3.4vw,46px); line-height:1.08; letter-spacing:-0.018em; color:var(--ink); margin:0 0 18px; max-width:24ch; text-wrap:balance; }
+.ag-h2 em{ font-style:italic; font-weight:500; color:var(--violet); }
+.ag-lead{ font-size:clamp(16px,1.15vw,18px); line-height:1.7; color:#4A4060; margin:0 0 16px; max-width:70ch; }
+.ag-lead strong{ color:var(--ink); font-weight:600; }
+/* Glass */
+.glass{ position:relative; isolation:isolate; overflow:hidden; background:linear-gradient(135deg,rgba(124,92,255,0.06) 0%,rgba(35,194,214,0.04) 100%),linear-gradient(180deg,rgba(255,255,255,0.82) 0%,rgba(255,255,255,0.58) 100%); backdrop-filter:blur(16px) saturate(170%); -webkit-backdrop-filter:blur(16px) saturate(170%); border:1px solid rgba(255,255,255,0.6); box-shadow:0 24px 50px -30px rgba(30,26,46,0.3),inset 0 1px 0 rgba(255,255,255,0.85); border-radius:16px; }
+.glass::after{ content:""; position:absolute; left:0; right:0; top:0; height:55%; background:linear-gradient(180deg,rgba(255,255,255,0.55) 0%,rgba(255,255,255,0.15) 45%,transparent 100%); -webkit-mask:linear-gradient(180deg,#000 0%,transparent 100%); mask:linear-gradient(180deg,#000 0%,transparent 100%); opacity:.55; z-index:0; pointer-events:none; border-radius:inherit; }
+.glass>*{ position:relative; z-index:1; }
+/* Dark */
+.ag-dark{ max-width:1180px; margin:clamp(56px,7vw,104px) auto 0; padding:clamp(48px,6vw,84px) clamp(28px,5vw,72px); border-radius:22px; position:relative; overflow:hidden; isolation:isolate; background:radial-gradient(70% 80% at 85% 0%,rgba(124,92,255,0.32),transparent 60%),radial-gradient(70% 80% at 0% 100%,rgba(35,194,214,0.28),transparent 60%),linear-gradient(160deg,#241B3A 0%,#1A1428 60%,#140F1E 100%); color:#ECE6F4; border:1px solid rgba(255,255,255,0.1); box-shadow:0 40px 80px -32px rgba(20,15,30,0.6),inset 0 1px 0 rgba(255,255,255,0.1); }
+.ag-dark::before{ content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,0.04) 50%,transparent 70%); }
+.ag-dark>*{ position:relative; z-index:1; }
+.ag-dark.center{ text-align:center; }
+.ag-dark.center .ag-eyebrow{ justify-content:center; }
+.ag-dark.center h2,.ag-dark.center p{ margin-left:auto; margin-right:auto; }
+.ag-dark .ag-eyebrow{ color:#C9B8FF; } .ag-dark .ag-eyebrow::before{ background:#C9B8FF; }
+.ag-dark h2{ font-family:var(--serif); font-weight:700; font-size:clamp(28px,3.6vw,50px); line-height:1.08; letter-spacing:-0.02em; color:#F6F2FB; margin:0 0 8px; max-width:24ch; }
+.ag-dark h2 em{ font-style:italic; color:var(--cyan); font-weight:500; }
+.ag-dark p{ color:rgba(236,230,244,0.88); font-size:clamp(15px,1.1vw,18px); line-height:1.7; margin:18px 0 0; max-width:72ch; }
+.ag-dark p strong{ color:#fff; font-weight:600; }
+/* Stats */
+.ag-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(14px,1.8vw,24px); margin-top:clamp(28px,3vw,40px); }
+.ag-stat{ padding:clamp(20px,2vw,28px); border-radius:14px; }
+.ag-stat .v{ font-family:var(--serif); font-weight:900; font-size:clamp(34px,4.4vw,60px); line-height:1; color:var(--ink); letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+.ag-stat .v .u{ font-size:0.42em; font-style:italic; font-weight:500; color:var(--violet); margin-left:2px; }
+.ag-stat .k{ margin-top:10px; font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--plum); opacity:.8; line-height:1.5; font-weight:600; }
+.ag-dark .ag-stat{ background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06)); border:1px solid rgba(255,255,255,0.18); }
+.ag-dark .ag-stat .v{ color:#F6F2FB; } .ag-dark .ag-stat .v .u{ color:var(--cyan); } .ag-dark .ag-stat .k{ color:rgba(236,230,244,0.8); }
+@media (max-width:760px){ .ag-stats{ grid-template-columns:1fr 1fr; } }
+/* Process steps */
+.ag-steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px); margin-top:clamp(24px,3vw,36px); }
+.ag-step{ padding:clamp(24px,2.4vw,32px); border-radius:16px; }
+.ag-step .no{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--violet); margin-bottom:12px; display:flex; align-items:center; gap:8px; }
+.ag-step .no b{ font-family:var(--serif); font-weight:900; font-style:italic; font-size:24px; color:var(--ink); }
+.ag-step h4{ font-family:var(--serif); font-weight:600; font-size:clamp(18px,1.6vw,22px); color:var(--ink); margin:0 0 10px; }
+.ag-step p{ font-family:var(--sans); font-size:13.5px; line-height:1.6; color:#4A4060; margin:0 0 12px; }
+.ag-step .insight{ font-family:var(--sans); font-size:12.5px; line-height:1.55; color:var(--ink); background:rgba(124,92,255,0.08); border-left:3px solid var(--violet); padding:10px 14px; border-radius:0 8px 8px 0; }
+.ag-step .insight b{ color:var(--violet); }
+@media (max-width:860px){ .ag-steps{ grid-template-columns:1fr; } }
+/* Tools row */
+.ag-tools{ display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+.ag-tools span{ font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--ink); background:rgba(35,194,214,0.1); border:1px solid rgba(35,194,214,0.3); padding:8px 14px; border-radius:999px; }
+/* Exhibit cards */
+.ag-exhibits{ display:grid; gap:clamp(18px,2.4vw,28px); margin-top:clamp(24px,3vw,36px); }
+.ag-exhibit{ display:grid; grid-template-columns:300px 1fr; gap:clamp(20px,3vw,44px); align-items:center; padding:clamp(22px,2.6vw,34px); border-radius:20px; }
+.ag-exhibit:nth-child(even){ grid-template-columns:1fr 300px; }
+.ag-exhibit:nth-child(even) .ag-viz{ order:2; }
+.ag-viz{ aspect-ratio:4/3; border-radius:14px; overflow:hidden; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; }
+.ag-viz.light{ background:linear-gradient(150deg,#2A1F46,#15101F); }
+.ag-viz.dna{ background:linear-gradient(150deg,#1A1428,#241B3A); }
+.ag-viz.neural{ background:linear-gradient(150deg,#15101F,#1E1A2E); }
+.ag-viz .viz-emoji{ font-size:clamp(40px,5vw,64px); line-height:1; filter:drop-shadow(0 6px 16px rgba(0,0,0,0.4)); }
+.ag-viz .viz-num{ font-family:var(--serif); font-weight:900; font-style:italic; font-size:clamp(22px,2.4vw,30px); background:linear-gradient(90deg,var(--violet),var(--cyan)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+.ag-viz .viz-label{ position:absolute; left:14px; bottom:12px; z-index:2; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,255,255,0.7); }
+.ag-exhibit .ex-tag{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--magenta); margin-bottom:8px; }
+.ag-exhibit h3{ font-family:var(--serif); font-weight:700; font-size:clamp(22px,2.2vw,30px); color:var(--ink); margin:0 0 14px; line-height:1.15; }
+.ag-cso{ display:grid; gap:10px; margin-bottom:16px; }
+.ag-cso .row{ display:grid; grid-template-columns:88px 1fr; gap:12px; align-items:baseline; }
+.ag-cso .row .lbl{ font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; opacity:.7; }
+.ag-cso .row.c .lbl{ color:var(--magenta); } .ag-cso .row.s .lbl{ color:var(--cyan); } .ag-cso .row.o .lbl{ color:var(--gold); }
+.ag-cso .row p{ font-family:var(--sans); font-size:13.5px; line-height:1.55; color:#4A4060; margin:0; }
+.ag-outcome{ display:flex; align-items:baseline; gap:12px; padding-top:14px; border-top:1px solid rgba(30,26,46,0.12); }
+.ag-outcome .n{ font-family:var(--serif); font-weight:900; font-size:clamp(30px,3vw,44px); line-height:1; color:var(--violet); font-variant-numeric:tabular-nums; }
+.ag-outcome .t{ font-family:var(--sans); font-size:12.5px; line-height:1.4; color:#4A4060; }
+@media (max-width:820px){ .ag-exhibit, .ag-exhibit:nth-child(even){ grid-template-columns:1fr; } .ag-exhibit:nth-child(even) .ag-viz{ order:0; } }
+/* 3-up cards */
+.ag-grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px); margin-top:clamp(24px,3vw,36px); }
+.ag-card{ padding:clamp(24px,2.4vw,32px); border-radius:16px; }
+.ag-card .tag{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--cyan); margin-bottom:12px; }
+.ag-card h4{ font-family:var(--serif); font-weight:600; font-size:clamp(17px,1.5vw,21px); color:var(--ink); margin:0 0 10px; line-height:1.2; }
+.ag-card p{ font-family:var(--sans); font-size:13.5px; line-height:1.6; color:#4A4060; margin:0; }
+@media (max-width:860px){ .ag-grid3{ grid-template-columns:1fr; } }
+/* 360 embed */
+.ag-embed{ margin-top:clamp(24px,3vw,38px); }
+.ag-embed iframe{ width:100%; aspect-ratio:16/9; border:0; border-radius:18px; display:block; background:#15101F; box-shadow:0 30px 60px -34px rgba(20,15,30,0.5); }
+.ag-embed-cap{ margin-top:14px; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum); opacity:.75; }
+/* Photo gallery */
+.ag-gallery{ display:grid; grid-template-columns:repeat(12,1fr); gap:clamp(12px,1.6vw,18px); margin-top:clamp(24px,3vw,36px); }
+.ag-photo{ position:relative; border-radius:14px; overflow:hidden; background:#1A1428; box-shadow:0 22px 44px -26px rgba(20,15,30,0.55); }
+.ag-photo img{ width:100%; height:100%; object-fit:cover; display:block; }
+.ag-photo figcaption{ position:absolute; left:0; right:0; bottom:0; padding:22px 14px 12px; font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#fff; background:linear-gradient(180deg,transparent,rgba(20,15,30,0.78)); }
+.ag-photo.wide{ grid-column:span 7; aspect-ratio:16/10; }
+.ag-photo.tall{ grid-column:span 5; aspect-ratio:3/4; }
+.ag-photo.half{ grid-column:span 6; aspect-ratio:4/3; }
+.ag-photo.third{ grid-column:span 4; aspect-ratio:3/4; }
+@media (max-width:760px){ .ag-photo.wide,.ag-photo.tall,.ag-photo.half,.ag-photo.third{ grid-column:span 12; aspect-ratio:4/3; } }
+/* Next / footer */
+.case-next{ background:var(--paper); border-top:1px solid rgba(30,26,46,0.12); padding:clamp(64px,8vw,120px) clamp(28px,7vw,128px); margin-top:clamp(56px,7vw,104px); }
+.case-next-inner{ max-width:1280px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+.case-next-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--plum); opacity:.7; margin-bottom:14px; }
+.case-next-title{ font-family:var(--serif); font-weight:500; font-size:clamp(36px,5vw,60px); line-height:1; letter-spacing:-0.02em; color:var(--ink); }
+.case-next-title .it{ font-style:italic; font-weight:400; color:var(--violet); }
+.case-next-link{ display:inline-flex; align-items:center; gap:14px; padding:16px 26px; border-radius:999px; background:var(--ink); color:var(--offwhite); font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; transition:background .35s,transform .35s; }
+.case-next-link:hover{ background:var(--violet); transform:translateY(-2px); }
+.case-next-link svg{ width:14px; height:14px; transition:transform .3s; }
+.case-next-link:hover svg{ transform:translateX(3px); }
+footer.case-foot{ padding:28px clamp(28px,7vw,128px); border-top:1px solid rgba(30,26,46,0.12); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--plum); opacity:.7; }
+/* Reveal */
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; transition:none; } .count-up{ animation:none; } }
+</style>
+</head>
+<body>
+
+<nav class="case-nav">
+  <a class="back" href="../Sabrina May Portfolio.html#work">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+    Back to case file
+  </a>
+  <div class="toc" id="sectionToc">
+    <a href="#problem" data-section="problem">Problem</a>
+    <a href="#process" data-section="process">Process</a>
+    <a href="#exhibits" data-section="exhibits">Exhibits</a>
+    <a href="#inside" data-section="inside">Gallery</a>
+    <a href="#impact" data-section="impact">Impact</a>
+    <a href="#sarnoff" data-section="sarnoff">Sarnoff</a>
+    <a href="#takeaways" data-section="takeaways">Takeaways</a>
+  </div>
+  <div class="brand">Sabrina May</div>
+</nav>
+
+<div class="scroll-tracker" id="scrollTracker" aria-hidden="true">
+  <div class="st-rail"></div>
+  <div class="st-fill"></div>
+  <div class="st-thumb"><div class="st-orb"></div><span class="st-pct">0%</span></div>
+</div>
+
+<header class="case-hero">
+  <div class="eyebrow">Case 07 · Museum UX &amp; Interactive Exhibit Design</div>
+  <div class="hero-row">
+    <div class="prism" aria-hidden="true">
+      <svg viewBox="0 0 100 100">
+        <line class="beam-in" x1="2" y1="50" x2="38" y2="50"/>
+        <polygon class="tri" points="50,24 72,68 28,68"/>
+        <line class="ray r1" x1="60" y1="56" x2="98" y2="34" stroke-dasharray="40"/>
+        <line class="ray r2" x1="61" y1="58" x2="98" y2="44" stroke-dasharray="40"/>
+        <line class="ray r3" x1="62" y1="60" x2="98" y2="54" stroke-dasharray="40"/>
+        <line class="ray r4" x1="62" y1="62" x2="98" y2="64" stroke-dasharray="40"/>
+        <line class="ray r5" x1="61" y1="64" x2="98" y2="74" stroke-dasharray="40"/>
+      </svg>
+    </div>
+    <h1><span class="spectrum">Art Gallery</span><br><span class="ink">Exhibit</span></h1>
+  </div>
+  <p class="tagline">Teaching STEM through light, touch, and play, without overwhelming a soul.</p>
+</header>
+
+<section class="case-cover" style="padding-bottom:0;">
+  <dl class="case-meta">
+    <div><dt>Role</dt><dd>Museum UXR &amp; Maker Space Technician</dd></div>
+    <div><dt>Location</dt><dd>Sarnoff Museum &amp; TCNJ Art Gallery</dd></div>
+    <div><dt>Mentor</dt><dd>Cara Giddens</dd></div>
+    <div><dt>Methods</dt><dd>Contextual inquiry · Prototyping · Surveys</dd></div>
+    <div><dt>Tools</dt><dd>Figma · Arduino · TouchDesigner</dd></div>
+    <div><dt>Disciplines</dt><dd>Physics · Biology · Art · Fabrication</dd></div>
+    <div><dt>Partners</dt><dd>AIMM Faculty · TCNJ Maker Space · RCA</dd></div>
+    <div><dt>Outcome</dt><dd>2.3× visitor dwell time</dd></div>
+  </dl>
+  <div class="case-actions">
+    <a href="https://sabrinasmay.com/art-gallery" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/><circle cx="12" cy="12" r="9"/></svg>
+      Live exhibit page
+    </a>
+  </div>
+</section>
+
+<div class="ag-cover">
+  <div class="ag-cover-banner reveal" style="padding:0;min-height:auto;"><img data-src="img/art-gallery/cover-wall.jpg" alt="The Flower Formation for Communication exhibit wall: botanical art prints and the red Build Your Own Honeysuckle interactive banner" style="position:relative;width:100%;height:auto;display:block;object-fit:cover;"></div>
+</div>
+
+<!-- Problem -->
+<section class="ag-dark center" id="problem">
+  <div class="ag-eyebrow">The problem space</div>
+  <h2>How do you make complex STEM <em>playful</em>, not overwhelming?</h2>
+  <p>Visitors walk past static signage. The challenge: design an interactive exhibit that teaches molecular biology and the physics of color in a way that's intuitive, hands-on, and accessible, without burying people in information. I worked as Maker Space Technician and UX Designer to turn a traditional gallery into a research-driven, immersive experience, merging <strong>AR, kinetic lighting, and touch-based interaction</strong>.</p>
+  <div class="ag-stats">
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="2.3" data-dp="1">0</span><span class="u">×</span></div><div class="k">Visitor dwell time vs. static exhibits</div></div>
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="3">0</span></div><div class="k">Interactive exhibits designed &amp; fabricated</div></div>
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="5">0</span><span class="u">+</span></div><div class="k">Disciplines bridged: art, physics, biology, tech</div></div>
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="2">0</span><span class="u">yr</span></div><div class="k">Sarnoff Museum reopened after closure</div></div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="ag-section" id="process">
+  <div class="ag-eyebrow reveal">The UXR process</div>
+  <h2 class="ag-h2 reveal">Research first, <em>then light it up.</em></h2>
+  <p class="ag-lead reveal">I ran the exhibit through a full research loop, grounding every interactive choice in how visitors actually behave in a gallery, then prototyping, testing, and iterating against real confusion.</p>
+  <div class="ag-steps">
+    <div class="ag-step glass reveal">
+      <div class="no"><b>01</b> Discover</div>
+      <h4>Contextual inquiry</h4>
+      <p>Observed how visitors engaged with traditional signage and static displays, and interviewed students and community members about what interactivity they actually wanted.</p>
+      <p style="margin-top:10px;">I was staffed for the <strong>Sarnoff Museum</strong> and the <strong>IMM Art Gallery</strong>.</p>
+      <div class="insight"><b>Insight:</b> Many visitors felt disengaged with static content and strongly preferred hands-on learning.</div>
+    </div>
+    <div class="ag-step glass reveal">
+      <div class="no"><b>02</b> Prototype</div>
+      <h4>Prototype &amp; test</h4>
+      <p>Built an AR-guided experience where visitors interact with light installations driven by real scientific data. Tested with small groups, gathering qualitative feedback through interviews and surveys. I also ran <strong>ethnographic studies</strong> on the Sarnoff Museum exhibits.</p>
+      <div class="ag-tools">
+        <span>Figma</span><span>Arduino</span><span>TouchDesigner</span><span>Google Forms</span><span>Observation</span>
+      </div>
+    </div>
+    <div class="ag-step glass reveal">
+      <div class="no"><b>03</b> Iterate</div>
+      <h4>Iterative design</h4>
+      <p>Simplified instructions after users struggled with joystick navigation, refined lighting transitions to feel more immersive and responsive, and worked with Biology faculty to keep the science accurate <em>and</em> usable.</p>
+      <p style="margin-top:10px;">For the ethnographic walkthroughs at Sarnoff, I iterated designs alongside the <strong>Physics lead</strong> and the <strong>Museum Director</strong>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Exhibits -->
+<section class="ag-section" id="exhibits">
+  <div class="ag-eyebrow reveal">Key exhibits</div>
+  <h2 class="ag-h2 reveal">Three exhibits, <em>three ways to learn by doing.</em></h2>
+  <div class="ag-exhibits">
+    <div class="ag-exhibit glass reveal">
+      <div class="ag-viz light"><span class="viz-emoji">🌈</span><span class="viz-num">Exhibit 01</span></div>
+      <div>
+        <div class="ex-tag">Exhibit 01 · Physics of color</div>
+        <h3>The Light Lab</h3>
+        <div class="ag-cso">
+          <div class="row c"><span class="lbl">Challenge</span><p>Communicate how colors and wavelengths affect perception.</p></div>
+          <div class="row s"><span class="lbl">Solution</span><p>Visitors moved real light beams to create unique chromatic patterns on a live screen.</p></div>
+          <div class="row o"><span class="lbl">Outcome</span><p>Reported that the hands-on play made wavelength-to-mood relationships click.</p></div>
+        </div>
+        <div class="ag-outcome"><span class="n"><span class="count-up" data-target="88">0</span>%</span><span class="t">of surveyed visitors said it increased their understanding of how light affects mood</span></div>
+      </div>
+    </div>
+
+    <div class="ag-exhibit glass reveal">
+      <div class="ag-viz dna" id="vizDna"><span class="viz-emoji">🧬</span><span class="viz-num">Exhibit 02</span></div>
+      <div>
+        <div class="ex-tag">Exhibit 02 · Molecular biology</div>
+        <h3>Molecular Musings</h3>
+        <div class="ag-cso">
+          <div class="row c"><span class="lbl">Challenge</span><p>Explain DNA replication through physical space.</p></div>
+          <div class="row s"><span class="lbl">Solution</span><p>Haptic sensors and floor projections guided participants through each stage of replication.</p></div>
+          <div class="row o"><span class="lbl">Outcome</span><p>Moving through the process, rather than reading it, made the science stick.</p></div>
+        </div>
+        <div class="ag-outcome"><span class="n">+<span class="count-up" data-target="27">0</span>%</span><span class="t">improvement in recall on post-visit questionnaires</span></div>
+      </div>
+    </div>
+
+    <div class="ag-exhibit glass reveal">
+      <div class="ag-viz neural" id="vizNeural"><span class="viz-emoji">🧠</span><span class="viz-num">Exhibit 03</span></div>
+      <div>
+        <div class="ex-tag">Exhibit 03 · Visual cognition</div>
+        <h3>Neural Pathways</h3>
+        <div class="ag-cso">
+          <div class="row c"><span class="lbl">Challenge</span><p>Visualize how the brain processes visual input.</p></div>
+          <div class="row s"><span class="lbl">Solution</span><p>Visitors triggered neural simulations by interacting with color-coded tiles.</p></div>
+          <div class="row o"><span class="lbl">Outcome</span><p>Many lingered and asked how to learn more, the goal of any good exhibit.</p></div>
+        </div>
+        <div class="ag-outcome"><span class="n"><span class="count-up" data-target="70">0</span>%</span><span class="t">of users stayed longer than at static exhibits</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Inside the exhibit -->
+<section class="ag-section" id="inside">
+  <div class="ag-eyebrow reveal">Inside the build</div>
+  <h2 class="ag-h2 reveal">The exhibit, <em>in the wild.</em></h2>
+  <p class="ag-lead reveal">The honeysuckle exhibit brought the research to life: an AR "Build Your Own Honeysuckle" wall, a joystick that let visitors trace evolution across a phylogenetic tree, botanical art, 3D-printed flower models, and guided tours that filled the gallery.</p>
+  <div class="ag-gallery reveal">
+    <figure class="ag-photo wide"><img data-src="img/art-gallery/tour.jpg" alt="A docent leads a group of children through the Delightful Diversity of Honeysuckles wall with a US map and phylogeny screen"><figcaption>Guided tour · visitors tracing honeysuckle diversity</figcaption></figure>
+    <figure class="ag-photo tall"><img data-src="img/art-gallery/ar-build.jpg" alt="A visitor holds a phone showing an augmented-reality honeysuckle over QR-coded botanical line drawings"><figcaption>Build Your Own Honeysuckle · AR in action</figcaption></figure>
+    <figure class="ag-photo third"><img data-src="img/art-gallery/joystick.jpg" alt="A visitor uses a joystick to navigate the evolution tree on screen at Tracing a History of Change"><figcaption>Joystick pedagogy · tracing evolution</figcaption></figure>
+    <figure class="ag-photo third"><img data-src="img/art-gallery/flower-model.jpg" alt="A hand holds a blue 3D-printed honeysuckle flower model in front of the Build Your Own Honeysuckle wall"><figcaption>Digitally fabricating the exhibit</figcaption></figure>
+    <figure class="ag-photo third"><img data-src="img/art-gallery/formation-wall.jpg" alt="The Flower Formation for Communication wall with petal-pattern diagrams and botanical prints"><figcaption>Flower Formation wall · proof to final</figcaption></figure>
+  </div>
+</section>
+
+<!-- Impact -->
+<section class="ag-dark" id="impact">
+  <h2>People stayed, and <em>kept learning.</em></h2>
+  <p>The interactive approach more than doubled how long visitors engaged, and the feedback loop didn't stop at this gallery, it shaped how the Sarnoff Museum designs exhibits going forward. The work was recognized as a model for interdisciplinary, research-informed gallery experiences.</p>
+  <div class="ag-stats">
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="2.3" data-dp="1">0</span><span class="u">×</span></div><div class="k">Longer dwell time than previous static exhibits</div></div>
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="88">0</span><span class="u">%</span></div><div class="k">Better understood how light affects mood</div></div>
+    <div class="ag-stat reveal"><div class="v">+<span class="count-up" data-target="27">0</span><span class="u">%</span></div><div class="k">Recall improvement after the DNA exhibit</div></div>
+    <div class="ag-stat reveal"><div class="v"><span class="count-up" data-target="70">0</span><span class="u">%</span></div><div class="k">Stayed longer at interactive vs. static</div></div>
+  </div>
+</section>
+
+<!-- Collaboration -->
+<section class="ag-section" id="collab">
+  <div class="ag-eyebrow reveal">Collaboration &amp; leadership</div>
+  <h2 class="ag-h2 reveal">A bridge between <em>art, science, and tech.</em></h2>
+  <div class="ag-grid3">
+    <div class="ag-card glass reveal"><div class="tag">Leadership</div><h4>Led weekly design sprints</h4><p>Ran weekly sprints with student researchers and faculty, keeping the art, science, and tech teams aligned on user-centered goals.</p></div>
+    <div class="ag-card glass reveal"><div class="tag">Constraints</div><h4>Accessibility by design</h4><p>Aligned physical exhibit limitations with UX constraints and ADA accessibility standards so the experience worked for everyone.</p></div>
+    <div class="ag-card glass reveal"><div class="tag">Craft</div><h4>Digital fabrication</h4><p>Designed and fabricated exhibit elements, including laser-cut acrylic flowers, to make curiosity and clarity tangible.</p></div>
+  </div>
+</section>
+
+<!-- Sarnoff -->
+<section class="ag-section" id="sarnoff">
+  <div class="ag-eyebrow reveal">The Sarnoff Museum</div>
+  <h2 class="ag-h2 reveal">Reopening a museum after <em>two years dark.</em></h2>
+  <p class="ag-lead reveal">Beyond the gallery, I helped reopen the <strong>David Sarnoff Museum</strong>, home to the RCA labs where color television was invented, after it had been closed for two years. Working with physicists and the museum director, I rebuilt the visitor experience around each exhibit's hands-on mechanism: a rotating display of historic industrial lightbulbs, and a pushbutton that fires glowing electrons to show exactly how 1960s televisions produced color.</p>
+  <p class="ag-lead reveal">It's the same principle as the gallery, let people <strong>touch the science</strong> and the understanding follows. Explore the reopened floor in the interactive 360° below: click and drag to look around.</p>
+  <div class="ag-embed reveal">
+    <iframe src="https://momento360.com/e/u/29c526454737487c83b0690c38886fa2?utm_campaign=embed&amp;utm_source=other&amp;heading=716.77&amp;pitch=-3.95&amp;field-of-view=75&amp;size=medium" scrolling="no" frameborder="0" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen="true" loading="lazy" title="360-degree walkthrough of the reopened Sarnoff Museum floor"></iframe>
+    <div class="ag-embed-cap">360° walkthrough · the reopened Sarnoff Museum floor · drag to look around</div>
+  </div>
+</section>
+
+<!-- Takeaways -->
+<section class="ag-section" id="takeaways">
+  <div class="ag-eyebrow reveal">What I learned</div>
+  <h2 class="ag-h2 reveal">Cool isn't the same as <em>usable.</em></h2>
+  <div class="ag-grid3">
+    <div class="ag-card glass reveal"><div class="tag">01</div><h4>Empathy then iteration</h4><p>Translating technical STEM concepts into intuitive design takes deep empathy and a lot of iteration, the first idea is rarely the clear one.</p></div>
+    <div class="ag-card glass reveal"><div class="tag">02</div><h4>Test the "wow"</h4><p>Balancing creative vision with user testing is essential. What's "cool" isn't always usable, and only testing tells you which is which.</p></div>
+    <div class="ag-card glass reveal"><div class="tag">03</div><h4>Collaborate across fields</h4><p>Working across art, science, and engineering unlocked solutions none of us would have reached alone.</p></div>
+  </div>
+</section>
+
+<section class="case-next">
+  <div class="case-next-inner">
+    <div>
+      <div class="case-next-eyebrow">That's the case file · 07 of 07</div>
+      <div class="case-next-title">Back to <span class="it">all work</span></div>
+    </div>
+    <a class="case-next-link" href="../Sabrina May Portfolio.html#work">
+      All case studies
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="case-foot">
+  <div>© 2026 Sabrina May · Case 07</div>
+  <div>Art Gallery Exhibit · Museum UX</div>
+</footer>
+
+<script>
+// Scroll tracker: hue-shifting light orb
+(function(){
+  var tracker=document.getElementById('scrollTracker'); if(!tracker) return;
+  var orb=tracker.querySelector('.st-orb');
+  function update(){
+    var doc=document.documentElement;
+    var scrollable=doc.scrollHeight - window.innerHeight;
+    var pct=scrollable>0 ? window.scrollY/scrollable : 0; pct=Math.max(0,Math.min(1,pct));
+    tracker.style.setProperty('--st-pos', pct.toFixed(4));
+    var label=tracker.querySelector('.st-pct'); if(label) label.textContent=Math.round(pct*100)+'%';
+    var thumb=tracker.querySelector('.st-thumb'); if(thumb) thumb.style.top=(104+(tracker.clientHeight-208)*pct)+'px';
+    var hue=Math.round(265 + pct*120); // violet -> cyan -> gold-ish sweep
+    if(orb) orb.style.setProperty('--orb', 'hsl('+hue+',80%,62%)');
+  }
+  tracker.classList.add('is-ready'); update();
+  window.addEventListener('scroll', update, {passive:true}); window.addEventListener('resize', update);
+})();
+// TOC active
+(function(){
+  var toc=document.getElementById('sectionToc'); if(!toc) return;
+  var links=[].slice.call(toc.querySelectorAll('a[data-section]'));
+  var sections=links.map(function(a){ return {link:a, el:document.getElementById(a.getAttribute('data-section'))}; }).filter(function(s){ return s.el; });
+  if(!sections.length) return;
+  function setActive(id){ links.forEach(function(a){ a.classList.toggle('is-active', a.getAttribute('data-section')===id); }); }
+  if('IntersectionObserver' in window){
+    var visible=new Map();
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) visible.set(e.target.id,e.intersectionRatio); else visible.delete(e.target.id); });
+      var best=null,br=0; visible.forEach(function(r,id){ if(r>br){br=r;best=id;} }); if(best) setActive(best);
+    }, {rootMargin:'-30% 0px -50% 0px', threshold:[0,0.1,0.25,0.5,0.75,1]});
+    sections.forEach(function(s){ io.observe(s.el); });
+  }
+})();
+// Smooth scroll
+(function(){
+  var nav=document.querySelector('.case-nav');
+  document.querySelectorAll('#sectionToc a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t=document.getElementById(a.getAttribute('href').slice(1)); if(!t) return; e.preventDefault();
+      var y=t.getBoundingClientRect().top + window.scrollY - ((nav?nav.offsetHeight:0)+12);
+      window.scrollTo({top:y, behavior:'smooth'});
+    });
+  });
+})();
+// Count-up (supports decimals via data-dp)
+(function(){
+  var els=document.querySelectorAll('.count-up'); if(!els.length||!('IntersectionObserver' in window)) return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animate(el){
+    var target=parseFloat(el.getAttribute('data-target'))||0;
+    var dp=parseInt(el.getAttribute('data-dp')||'0',10);
+    if(reduce){ el.textContent=target.toFixed(dp); return; }
+    var dur=1300, t0=performance.now();
+    function step(now){ var p=Math.min(1,(now-t0)/dur); var e=1-Math.pow(1-p,3); el.textContent=(target*e).toFixed(dp); if(p<1) requestAnimationFrame(step); else el.textContent=target.toFixed(dp); }
+    requestAnimationFrame(step);
+  }
+  var seen=new WeakSet();
+  var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting && !seen.has(en.target)){ seen.add(en.target); animate(en.target); } }); }, {threshold:0.5});
+  els.forEach(function(el){ io.observe(el); });
+})();
+// Reveal
+(function(){
+  var els=document.querySelectorAll('.reveal'); if(!els.length||!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('in');}); return; }
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script>
+// Preview sandbox shim — local relative-path assets need this document's
+// auth token (?t=...) on every request. <img> in this iframe don't inherit
+// it automatically, so append the document query string to relative img srcs
+// once the credential context is ready. Harmless on a real host (no token).
+(function(){
+  var qs = window.location.search || '';
+  function activate(){
+    document.querySelectorAll('img[data-src], video[data-src]').forEach(function(el){
+      if (el.getAttribute('src')) return;
+      var s = el.getAttribute('data-src');
+      if (!s) return;
+      el.src = (qs && s.indexOf('?') === -1 && !/^(https?:|data:|blob:)/.test(s)) ? s + qs : s;
+      if (el.tagName === 'VIDEO') el.load();
+    });
+    if (qs) {
+      document.querySelectorAll('img[src], video[src]').forEach(function(el){
+        var s = el.getAttribute('src');
+        if (!s || /^(https?:|data:|blob:)/.test(s) || s.indexOf('?') !== -1) return;
+        el.setAttribute('src', s + qs);
+        if (el.tagName === 'VIDEO') el.load();
+      });
+    }
+  }
+  if (document.readyState === 'complete') activate();
+  else window.addEventListener('load', activate);
+})();
+</script>
+<title>Lock Down · Sabrina May</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500;1,9..144,600&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="case-base">
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--offwhite);color:var(--plum-deep);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{line-height:1.5}
+a{color:inherit;text-decoration:none}
+:root{
+  --lavender:#C9B8D9; --plum:#4A3B5C; --plum-deep:#2E2438;
+  --offwhite:#FAF7F2; --paper:#F5EFE0;
+  --yellow:#F5C842; --teal:#5BB5A8; --coral:#FF8B73;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Inter', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+
+/* Top nav strip — minimal, mirrors portfolio. */
+.case-nav{
+  display:flex; align-items:center; justify-content:space-between;
+  gap:24px; padding: 22px clamp(28px,7vw,128px);
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,247,242,0.85);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(74,59,92,0.08);
+}
+.case-nav .back{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:11px; letter-spacing:0.22em;
+  text-transform:uppercase; color:var(--plum-deep);
+  padding: 10px 16px 10px 12px; border-radius:999px;
+  border:1px solid rgba(74,59,92,0.15);
+  transition: background .25s ease, transform .25s ease, color .25s ease;
+}
+.case-nav .back:hover{ background: var(--plum-deep); color: var(--paper); transform: translateX(-2px); }
+.case-nav .back svg{ width:14px; height:14px; transition: transform .3s ease; }
+.case-nav .back:hover svg{ transform: translateX(-3px); }
+.case-nav .brand{
+  font-family:var(--serif); font-style:italic; font-weight:500;
+  font-size:16px; letter-spacing:-0.01em; color:var(--plum-deep);
+}
+
+/* Hero */
+.case-hero{
+  padding: clamp(60px,9vw,120px) clamp(28px,7vw,128px) clamp(40px,5vw,72px);
+  max-width: 1280px; margin: 0 auto;
+}
+.case-hero .eyebrow{
+  display:flex; align-items:center; gap:14px;
+  font-family: var(--mono); font-size:11px; letter-spacing:0.22em;
+  text-transform:uppercase; color:var(--plum); opacity:.85;
+  margin-bottom: 28px;
+}
+.case-hero .eyebrow::before{ content:""; width:32px; height:1px; background:var(--plum); opacity:.55 }
+.case-hero h1{
+  font-family: var(--serif); font-weight: 900;
+  font-size: clamp(56px, 9vw, 144px);
+  line-height: 0.95; letter-spacing: -0.025em;
+  color: var(--plum-deep);
+  max-width: 13ch;
+  text-wrap: pretty;
+}
+.case-hero h1 .it{ font-style: italic; font-weight: 400; color: var(--teal); }
+
+/* Animated padlock standing in for the "o" in Lock */
+.lock-o{
+  display: inline-block;
+  width: 0.62em; height: 0.84em;
+  vertical-align: -0.13em;
+  margin: 0 -0.11em;            /* tuck flush against the L and the c */
+  color: var(--teal);
+  transform-origin: 50% 82%;
+  animation: lockTilt 3.4s cubic-bezier(.5,0,.3,1) infinite;
+}
+.lock-o svg{ width: 100%; height: 100%; overflow: visible; display:block; }
+.lock-o .lo-shackle{
+  fill: none; stroke: currentColor;
+  stroke-width: 12; stroke-linecap: round;
+  transform-origin: 71px 66px;
+  animation: lockUnlock 3.4s cubic-bezier(.5,0,.3,1) infinite;
+}
+.lock-o .lo-body{ fill: currentColor; }
+.lock-o .lo-hole{ fill: var(--offwhite); }
+@keyframes lockUnlock{
+  0%, 26%   { transform: translateY(0) rotate(0deg); }
+  46%, 70%  { transform: translateY(-9px) rotate(34deg); }
+  90%, 100% { transform: translateY(0) rotate(0deg); }
+}
+/* Whole lock recoils: tilts as it opens, snaps back with a tilt as it clicks shut. */
+@keyframes lockTilt{
+  0%, 24%   { transform: rotate(0deg); }
+  40%       { transform: rotate(5deg); }   /* opening */
+  46%, 68%  { transform: rotate(0deg); }   /* open, settled */
+  85%       { transform: rotate(-5deg); }  /* click shut, recoil */
+  93%, 100% { transform: rotate(0deg); }   /* locked, settled */
+}
+@media (prefers-reduced-motion: reduce){
+  .lock-o{ animation: none; }
+  .lock-o .lo-shackle{ animation: none; }
+}
+
+/* Meta block */.case-meta{
+  margin: clamp(40px,5vw,64px) 0 clamp(48px,6vw,72px);
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px 32px;
+  padding-top: 28px;
+  border-top: 1px solid rgba(74,59,92,0.15);
+  max-width: 920px;
+}
+.case-meta dt{
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--plum); opacity: .7;
+  margin-bottom: 8px;
+}
+.case-meta dd{
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(16px, 1.4vw, 18px);
+  color: var(--plum-deep); letter-spacing: -0.005em;
+}
+
+/* Cover image */
+.case-cover{
+  margin: 0 auto;
+  max-width: 1280px; padding: 0 clamp(28px,7vw,128px);
+}
+.case-cover-frame{
+  aspect-ratio: 16 / 9;
+  border-radius: 18px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 50px 100px -36px rgba(46,36,56,0.45);
+}
+.case-cover-frame::before{
+  content:""; position:absolute; inset:0;
+  background:
+    radial-gradient(60% 50% at 30% 30%, rgba(255,255,255,0.4), transparent 60%),
+    linear-gradient(135deg, rgba(74,59,92,0.05), rgba(74,59,92,0.18));
+  z-index: 1;
+}
+.case-cover-frame .shape{ position:absolute; border-radius:50%; }
+.case-cover-label{
+  position:absolute; bottom: 22px; left: 24px;
+  display:flex; align-items:center; gap:10px;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--paper); opacity: .85;
+  z-index: 2;
+}
+.case-cover-label::before{ content:""; width:18px; height:1px; background: var(--paper); opacity:.6 }
+
+/* Body content */
+.case-body{
+  max-width: 760px; margin: 0 auto;
+  padding: clamp(64px,8vw,120px) clamp(28px,7vw,128px) clamp(64px,8vw,120px);
+}
+.case-body .lead{
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(22px, 2.2vw, 30px);
+  line-height: 1.4; color: var(--plum-deep); opacity: .9;
+  margin-bottom: 48px;
+  text-wrap: pretty;
+}
+.case-body h2{
+  font-family: var(--serif); font-weight: 700;
+  font-size: clamp(28px, 3vw, 38px);
+  letter-spacing: -0.015em; color: var(--plum-deep);
+  margin: 64px 0 18px;
+  line-height: 1.1;
+}
+.case-body p{
+  font-size: clamp(15px, 1.05vw, 17px);
+  color: var(--plum); line-height: 1.6;
+  margin-bottom: 16px;
+  max-width: 65ch;
+}
+.case-body p strong{ color: var(--plum-deep); font-weight: 600; }
+
+/* Placeholder note callout for in-progress case writeups */
+.case-placeholder{
+  margin: 40px 0;
+  padding: 22px 26px;
+  border-left: 3px solid var(--coral);
+  background: rgba(255,139,115,0.08);
+  border-radius: 4px;
+  font-family: var(--mono); font-size: 12px;
+  letter-spacing: 0.06em; color: var(--plum);
+  line-height: 1.7;
+}
+.case-placeholder strong{
+  display:block;
+  font-family: var(--serif); font-style: italic; font-weight: 500;
+  font-size: 18px; letter-spacing: -0.005em;
+  color: var(--plum-deep); margin-bottom: 6px;
+}
+
+/* Next-case footer */
+.case-next{
+  background: var(--paper);
+  border-top: 1px solid rgba(74,59,92,0.12);
+  padding: clamp(64px,8vw,120px) clamp(28px,7vw,128px);
+}
+.case-next-inner{
+  max-width: 1280px; margin: 0 auto;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap: 32px; flex-wrap: wrap;
+}
+.case-next-eyebrow{
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--plum); opacity: .7;
+  margin-bottom: 14px;
+}
+.case-next-title{
+  font-family: var(--serif); font-weight: 500;
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1; letter-spacing: -0.02em;
+  color: var(--plum-deep);
+}
+.case-next-title .it{ font-style: italic; font-weight: 400; color: var(--teal); }
+.case-next-link{
+  display:inline-flex; align-items:center; gap:14px;
+  padding: 16px 26px;
+  border-radius:999px;
+  background: var(--plum-deep); color: var(--paper);
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.22em; text-transform: uppercase;
+  transition: background .35s ease, transform .35s ease;
+}
+.case-next-link:hover{ background: var(--coral); transform: translateY(-2px); }
+.case-next-link svg{ width:14px; height:14px; transition: transform .3s ease; }
+.case-next-link:hover svg{ transform: translateX(3px); }
+
+footer.case-foot{
+  padding: 28px clamp(28px,7vw,128px);
+  border-top:1px solid rgba(74,59,92,0.12);
+  display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+  font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--plum); opacity: .7;
+}
+
+@media (max-width: 760px){
+  .case-meta{ grid-template-columns: repeat(2, 1fr); }
+  .case-next-inner{ flex-direction: column; align-items: flex-start; }
+}
+
+</style>
+<style>
+  /* =========================================================
+     Lock Down - digital wellbeing case study.
+     Builds on case.css; adds the rich narrative components
+     (glass cards, big animated stats, dark blocks, timeline,
+     phone mockups, team cards). Palette: portfolio plum/teal/
+     coral/yellow, with teal as the calm primary.
+     ========================================================= */
+
+  .ld-section{
+    max-width: 1180px; margin: 0 auto;
+    padding: clamp(56px, 7vw, 104px) clamp(28px, 7vw, 128px) 0;
+  }
+  .ld-section.tight{ padding-top: clamp(36px, 4vw, 56px); }
+  .ld-eyebrow{
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--mono); font-size: 11px;
+    letter-spacing: 0.24em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 18px;
+  }
+  .ld-eyebrow::before{ content:""; width: 30px; height: 1px; background: var(--teal); opacity: .7; }
+  .ld-h2{
+    font-family: var(--serif); font-weight: 700;
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.08; letter-spacing: -0.018em;
+    color: var(--plum-deep);
+    margin: 0 0 18px; max-width: 22ch;
+    text-wrap: balance;
+  }
+  .ld-h2 em{ font-style: italic; font-weight: 500; color: var(--teal); }
+  .ld-lead{
+    font-size: clamp(16px, 1.15vw, 18px);
+    line-height: 1.7; color: var(--plum);
+    margin: 0 0 16px; max-width: 70ch;
+  }
+  .ld-lead strong{ color: var(--plum-deep); font-weight: 600; }
+
+  /* ---- Glass card base ---- */
+  .glass{
+    position: relative; isolation: isolate; overflow: hidden;
+    background:
+      linear-gradient(135deg, rgba(91,181,168,0.06) 0%, rgba(74,59,92,0.04) 100%),
+      linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.58) 100%);
+    backdrop-filter: blur(16px) saturate(170%);
+    -webkit-backdrop-filter: blur(16px) saturate(170%);
+    border: 1px solid rgba(255,255,255,0.55);
+    box-shadow: 0 24px 50px -30px rgba(46,36,56,0.30), inset 0 1px 0 rgba(255,255,255,0.85);
+    border-radius: 16px;
+  }
+  .glass::after{
+    content:""; position:absolute; left:0; right:0; top:0; height:55%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 45%, transparent 100%);
+    -webkit-mask: linear-gradient(180deg,#000 0%,transparent 100%);
+    mask: linear-gradient(180deg,#000 0%,transparent 100%);
+    opacity:.55; z-index:0; pointer-events:none; border-radius: inherit;
+  }
+  .glass > *{ position: relative; z-index: 1; }
+
+  /* ---- Hero subtitle ---- */
+  .ld-hero-sub{
+    font-family: var(--serif); font-style: italic; font-weight: 500;
+    font-size: clamp(20px, 2.4vw, 32px);
+    color: var(--teal); line-height: 1.3;
+    margin-top: 20px; max-width: 24ch;
+  }
+
+  /* ---- Cover phone band ---- */
+  .ld-cover{
+    max-width: 1180px; margin: clamp(32px,4vw,52px) auto 0;
+    padding: 0 clamp(28px, 7vw, 128px);
+  }
+  .ld-cover-frame{
+    position: relative; overflow: hidden;
+    border-radius: 22px;
+    background:
+      radial-gradient(80% 80% at 80% 0%, rgba(255,209,91,0.18), transparent 60%),
+      radial-gradient(70% 80% at 0% 100%, rgba(91,181,168,0.22), transparent 60%),
+      linear-gradient(160deg, #2E3A45 0%, #1F2A33 100%);
+    padding: clamp(36px, 5vw, 64px);
+    display: flex; align-items: center; justify-content: center;
+    gap: clamp(18px, 3vw, 44px);
+    min-height: clamp(320px, 40vw, 520px);
+  }
+  /* Real staged render as the cover */
+  .ld-cover-render{
+    position: relative; overflow: hidden;
+    border-radius: 22px;
+    aspect-ratio: 16 / 10;
+    box-shadow: 0 50px 100px -36px rgba(46,36,56,0.45);
+    background: linear-gradient(135deg, #D9CDE8 0%, #E9E2D2 50%, #CFE0D6 100%);
+  }
+  .ld-cover-render img{
+    width: 100%; height: 100%;
+    object-fit: cover; object-position: center;
+    display: block;
+  }
+  .ld-cover-cap{
+    position: absolute; left: 22px; bottom: 18px;
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--plum-deep);
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.6);
+    padding: 7px 14px; border-radius: 999px;
+  }
+
+  /* ---- Phone mockup ---- */
+  .phone{
+    position: relative;
+    width: clamp(150px, 17vw, 224px);
+    aspect-ratio: 9 / 19.5;
+    border-radius: 30px;
+    background: linear-gradient(160deg, #0E1418, #232E36);
+    padding: 8px;
+    box-shadow: 0 40px 70px -28px rgba(0,0,0,0.6), inset 0 0 0 2px rgba(255,255,255,0.06);
+    flex: 0 0 auto;
+  }
+  .phone.lift-1{ transform: translateY(8px) rotate(-5deg); }
+  .phone.lift-2{ transform: translateY(-14px) rotate(0deg) scale(1.06); z-index: 2; }
+  .phone.lift-3{ transform: translateY(8px) rotate(5deg); }
+  .phone-screen{
+    position: absolute; inset: 8px;
+    border-radius: 24px; overflow: hidden;
+    background: linear-gradient(180deg, #FBF8F2 0%, #EAF3F0 100%);
+    display: flex; flex-direction: column;
+  }
+  .phone-notch{
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 34%; height: 16px; border-radius: 0 0 12px 12px;
+    background: #0E1418; z-index: 5;
+  }
+  /* App screen scaffold */
+  .scr{ padding: 26px 16px 16px; display:flex; flex-direction:column; gap:10px; height:100%; }
+  .scr-status{ display:flex; justify-content:space-between; font-family:var(--mono); font-size:8px; color:var(--plum); opacity:.6; }
+  .scr-title{ font-family:var(--serif); font-weight:700; font-size:15px; color:var(--plum-deep); line-height:1; }
+  .scr-title .it{ font-style:italic; font-weight:400; color:var(--teal); }
+  .scr-ring{
+    width: 96px; height: 96px; margin: 6px auto;
+    border-radius: 50%;
+    background: conic-gradient(var(--teal) 0deg 250deg, rgba(74,59,92,0.12) 250deg 360deg);
+    display:flex; align-items:center; justify-content:center;
+    position: relative;
+  }
+  .scr-ring::before{ content:""; position:absolute; inset:10px; border-radius:50%; background:#FBF8F2; }
+  .scr-ring span{ position: relative; font-family:var(--serif); font-weight:700; font-size:18px; color:var(--plum-deep); }
+  .scr-ring span small{ display:block; font-family:var(--mono); font-size:7px; letter-spacing:.1em; opacity:.6; text-transform:uppercase; }
+  .scr-row{
+    display:flex; align-items:center; justify-content:space-between;
+    background: #fff; border-radius: 10px; padding: 9px 11px;
+    box-shadow: 0 4px 10px -6px rgba(46,36,56,0.2);
+  }
+  .scr-row .lbl{ font-family:var(--sans); font-size:9px; font-weight:600; color:var(--plum-deep); }
+  .scr-row .sub{ font-family:var(--mono); font-size:7px; color:var(--plum); opacity:.6; }
+  .scr-toggle{ width:26px; height:15px; border-radius:999px; background:var(--teal); position:relative; flex:0 0 auto; }
+  .scr-toggle::after{ content:""; position:absolute; top:2px; right:2px; width:11px; height:11px; border-radius:50%; background:#fff; }
+  .scr-toggle.off{ background: rgba(74,59,92,0.2); }
+  .scr-toggle.off::after{ right:auto; left:2px; }
+  .scr-pill{ font-family:var(--mono); font-size:7px; letter-spacing:.12em; text-transform:uppercase; color:var(--teal); background:rgba(91,181,168,0.14); padding:4px 8px; border-radius:999px; align-self:flex-start; }
+  .scr-bar{ height:6px; border-radius:999px; background:rgba(74,59,92,0.1); overflow:hidden; }
+  .scr-bar i{ display:block; height:100%; background:var(--coral); border-radius:999px; }
+  .scr-nav{ margin-top:auto; display:flex; justify-content:space-around; padding-top:8px; border-top:1px solid rgba(74,59,92,0.08); }
+  .scr-nav b{ width:16px; height:16px; border-radius:5px; background:rgba(74,59,92,0.14); }
+  .scr-nav b.on{ background:var(--teal); }
+
+  /* ---- Big animated stat strip ---- */
+  .ld-stats{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: clamp(14px, 1.8vw, 24px);
+    margin-top: clamp(28px, 3vw, 40px);
+  }
+  .ld-stat{ padding: clamp(20px,2vw,28px); border-radius: 14px; }
+  .ld-stat .v{
+    font-family: var(--serif); font-weight: 900;
+    font-size: clamp(34px, 4.4vw, 60px); line-height: 1;
+    color: var(--plum-deep); letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .ld-stat .v .u{ font-size: 0.45em; font-style: italic; font-weight: 500; color: var(--teal); margin-left: 2px; }
+  .ld-stat .k{
+    margin-top: 10px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--plum); opacity: .75; line-height: 1.5;
+  }
+  @media (max-width: 760px){ .ld-stats{ grid-template-columns: 1fr 1fr; } }
+  /* Stat cards sit on the dark block; keep label + number high-contrast. */
+  .ld-dark .ld-stat .k{ color: var(--plum-deep); opacity: 1; font-weight: 600; }
+  .ld-dark .ld-stat .v{ color: var(--plum-deep); }
+
+  /* ---- Dark context / psychology block ---- */
+  .ld-dark{
+    max-width: 1180px; margin: clamp(56px,7vw,104px) auto 0;
+    padding: clamp(48px,6vw,84px) clamp(28px,5vw,72px);
+    border-radius: 22px; position: relative; overflow: hidden; isolation: isolate;
+    background:
+      radial-gradient(80% 60% at 85% 0%, rgba(255,139,115,0.16), transparent 60%),
+      radial-gradient(70% 80% at 0% 100%, rgba(91,181,168,0.18), transparent 60%),
+      linear-gradient(160deg, #2E2438 0%, #20202F 60%, #1A1A26 100%);
+    color: #F4ECF6;
+    border: 1px solid rgba(255,255,255,0.10);
+    box-shadow: 0 40px 80px -32px rgba(26,26,38,0.6), inset 0 1px 0 rgba(255,255,255,0.10);
+  }
+  .ld-dark::before{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.04) 50%, transparent 70%);
+  }
+  .ld-dark > *{ position: relative; z-index: 1; }
+  .ld-dark .ld-eyebrow{ color: #FBC9A8; }
+  .ld-dark .ld-eyebrow::before{ background: #FBC9A8; }
+  .ld-dark h2{
+    font-family: var(--serif); font-weight: 700;
+    font-size: clamp(30px, 4vw, 56px); line-height: 1.05;
+    letter-spacing: -0.02em; color: #FFF6F0; margin: 0 0 8px; max-width: 20ch;
+  }
+  .ld-dark h2 em{ font-style: italic; color: var(--coral); font-weight: 600; }
+  .ld-dark p{
+    color: rgba(244,236,246,0.86); font-size: clamp(15px,1.1vw,18px);
+    line-height: 1.7; margin: 18px 0 0; max-width: 70ch;
+  }
+  .ld-dark p strong{ color: #FFFFFF; font-weight: 600; }
+  /* Psychology section: centered hero intro + balanced 2-col body */
+  .psych-intro{ text-align: center; max-width: none; margin: 0 auto; }
+  .psych-intro .big-quote{ display: block; width: fit-content; max-width: 100%; margin-left: auto; margin-right: auto; margin-bottom: 4px; text-align: center; }
+  @media (max-width: 600px){ .psych-intro .big-quote{ white-space: normal; } }
+  .psych-intro .ld-eyebrow{ justify-content: center; }
+  .ld-dark .psych-intro h2{ margin-left: auto; margin-right: auto; max-width: none; }
+  .psych-cols{
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(28px, 4vw, 56px);
+    max-width: 900px; margin: clamp(22px,3vw,34px) auto 0;
+  }
+  .ld-dark .psych-cols p{ margin: 0; max-width: none; color: #FBFBFB; }
+  /* Why-it-started: centered intro like the psychology section */
+  .why-intro{ text-align: center; max-width: 760px; margin: 0 auto; }
+  .why-intro .ld-eyebrow{ justify-content: center; }
+  .ld-dark .why-intro h2{ margin-left: auto; margin-right: auto; max-width: none; }
+  .ld-dark .why-intro p{ max-width: none; margin: 0 auto 16px; }
+  /* Why-it-started body: two balanced columns so it fills the box */
+  .why-cols{ display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px,4vw,56px); margin-top: clamp(18px,2.4vw,28px); }
+  .ld-dark .why-cols p{ margin: 0; max-width: none; }
+  @media (max-width: 760px){ .why-cols{ grid-template-columns: 1fr; } }
+  @media (max-width: 760px){ .psych-cols{ grid-template-columns: 1fr; } }
+  .ld-dark .big-quote{
+    font-family: var(--serif); font-weight: 500; font-style: italic;
+    font-size: clamp(22px, 2.4vw, 34px); line-height: 1.25;    color: #FFF6F0; margin: 0 auto 4px;
+  }
+
+  /* ---- Process timeline ---- */
+  .ld-timeline{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: clamp(14px, 1.6vw, 20px);
+    margin-top: clamp(24px, 3vw, 36px);
+  }
+  .ld-week{ padding: 22px 22px 24px; border-radius: 14px; }
+  .ld-week .wk{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 10px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .ld-week .wk b{
+    font-family: var(--serif); font-weight: 900; font-style: italic;
+    font-size: 22px; color: var(--plum-deep); letter-spacing: -0.01em;
+  }
+  .ld-week h4{
+    font-family: var(--sans); font-weight: 700; font-size: 14px;
+    color: var(--plum-deep); margin: 0 0 8px; line-height: 1.25;
+  }
+  .ld-week p{
+    font-family: var(--sans); font-size: 12.5px; line-height: 1.55;
+    color: var(--plum); margin: 0; max-width: none;
+  }
+  @media (max-width: 980px){ .ld-timeline{ grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 560px){ .ld-timeline{ grid-template-columns: 1fr; } }
+
+  /* ---- Survey insight cards ---- */
+  .ld-grid-3{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(16px, 2vw, 24px); margin-top: clamp(24px,3vw,36px);
+  }  .ld-card{ padding: clamp(24px,2.4vw,32px); border-radius: 16px; }
+  .ld-card .ld-card-tag{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 12px;
+  }
+  .ld-card h4{
+    font-family: var(--serif); font-weight: 600; font-size: clamp(18px,1.6vw,22px);
+    color: var(--plum-deep); margin: 0 0 10px; line-height: 1.2;
+  }
+  .ld-card p{ font-family: var(--sans); font-size: 13.5px; line-height: 1.6; color: var(--plum); margin: 0; max-width: none; }
+  @media (max-width: 860px){ .ld-grid-3{ grid-template-columns: 1fr; } }
+
+  /* ---- Problem callout ---- */
+  .ld-problem{
+    max-width: 1180px; margin: clamp(40px,5vw,64px) auto 0;
+    padding: 0 clamp(28px, 7vw, 128px);
+  }
+  .ld-problem .inner{
+    padding: clamp(28px,3vw,40px) clamp(28px,3.4vw,48px);
+    border-radius: 18px; border-left: 4px solid var(--coral);
+  }
+  .ld-problem .lbl{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--coral); margin-bottom: 12px;
+  }
+  .ld-problem .stmt{
+    font-family: var(--serif); font-weight: 500; font-size: clamp(20px,2.2vw,30px);
+    line-height: 1.35; color: var(--plum-deep); margin: 0; max-width: 40ch;
+  }
+
+  /* ---- Ideation feature grid ---- */
+  .ld-features{
+    display: grid; grid-template-columns: repeat(2, 1fr);
+    gap: clamp(14px, 1.6vw, 18px); margin-top: clamp(24px,3vw,36px);
+  }
+  .ld-feature{
+    display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: start;
+    padding: 20px 24px; border-radius: 14px;
+  }
+  .ld-feature .num{
+    font-family: var(--serif); font-weight: 900; font-style: italic;
+    font-size: 22px; color: var(--teal); line-height: 1;
+  }
+  .ld-feature h4{ font-family: var(--sans); font-weight: 700; font-size: 14.5px; color: var(--plum-deep); margin: 2px 0 4px; }
+  .ld-feature p{ font-family: var(--sans); font-size: 12.5px; line-height: 1.5; color: var(--plum); margin: 0; max-width: none; }
+  @media (max-width: 760px){ .ld-features{ grid-template-columns: 1fr; } }
+
+  /* ---- Iterations ---- */
+  .ld-iter{ margin-top: clamp(26px, 3vw, 40px); display: grid; gap: clamp(18px,2vw,26px); }
+  .ld-iter-row{
+    display: grid; grid-template-columns: 280px 1fr; gap: clamp(20px,3vw,44px);
+    align-items: center;
+  }
+  .ld-iter-row:nth-child(even){ grid-template-columns: 1fr 280px; }
+  .ld-iter-row:nth-child(even) .ld-iter-art{ order: 2; }
+  .ld-iter-art{
+    border-radius: 16px; overflow: hidden;
+    aspect-ratio: 4 / 3;
+    background:
+      radial-gradient(80% 70% at 50% 30%, #20272F 0%, #12181F 100%);
+    border: 1px solid rgba(74,59,92,0.14);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 20px 40px -26px rgba(46,36,56,0.4);
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    padding: 14px;
+  }
+  .ld-iter-art .ph-label{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--plum); opacity: .6; line-height: 1.7;
+  }
+  .ld-iter-art img{ width: 100%; height: 100%; object-fit: contain; border-radius: 6px; }
+
+  /* ---- Lo-fi exploration gallery ---- */
+  .ld-gallery{
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: clamp(12px, 1.4vw, 18px);
+    margin: clamp(22px, 2.6vw, 32px) 0 clamp(8px,1vw,16px);
+  }
+  .ld-gallery figure{ margin: 0; }
+  .ld-gallery .g-frame{
+    border-radius: 12px; overflow: hidden;
+    aspect-ratio: 3 / 4;
+    background: radial-gradient(80% 70% at 50% 30%, #20272F 0%, #12181F 100%);
+    border: 1px solid rgba(74,59,92,0.14);
+    box-shadow: 0 16px 34px -24px rgba(46,36,56,0.4);
+    display: flex; align-items: center; justify-content: center;
+    padding: 10px;
+  }
+  .ld-gallery .g-frame img{ width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+  .ld-gallery figcaption{
+    margin-top: 10px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--plum); opacity: .8; line-height: 1.5;
+  }
+  @media (max-width: 860px){ .ld-gallery{ grid-template-columns: 1fr 1fr; } }
+
+  /* ---- Full-width flow showcase ---- */
+  .ld-flow-show{
+    margin-top: clamp(26px, 3vw, 40px);
+    border-radius: 16px; overflow: hidden;
+    background: radial-gradient(80% 80% at 50% 20%, #20272F 0%, #12181F 100%);
+    border: 1px solid rgba(74,59,92,0.14);
+    box-shadow: 0 30px 60px -32px rgba(46,36,56,0.45);
+    padding: clamp(18px, 2vw, 30px);
+  }
+  .ld-flow-show img{ width: 100%; height: auto; display: block; border-radius: 8px; }
+  .ld-flow-cap{
+    margin-top: 14px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--plum); opacity: .75;
+  }
+
+  /* ---- Survey charts ---- */
+  .svy-grid{ display: grid; grid-template-columns: 1fr 1fr; gap: clamp(18px,2.4vw,28px); margin-top: clamp(24px,3vw,36px); }
+  @media (max-width: 820px){ .svy-grid{ grid-template-columns: 1fr; } }
+  .svy-card{ padding: clamp(24px,2.6vw,32px); border-radius: 16px; }
+  .svy-q{ font-family: var(--serif); font-weight: 600; font-size: clamp(17px,1.5vw,20px); color: var(--plum-deep); line-height: 1.25; margin: 0 0 4px; }
+  .svy-n{ font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--plum); opacity: .7; margin-bottom: 22px; }
+  .svy-bars{ display: flex; align-items: flex-end; gap: clamp(4px,0.8vw,9px); height: 168px; }
+  .svy-col{ flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; gap: 6px; }
+  .svy-val{ font-family: var(--mono); font-size: 10px; color: var(--plum); opacity: .75; white-space: nowrap; }
+  .svy-bar{ width: 100%; border-radius: 5px 5px 0 0; background: rgba(91,181,168,0.55); min-height: 2px; transition: height .8s cubic-bezier(.2,.7,.2,1); }
+  .svy-bar.peak{ background: var(--coral); }
+  .svy-x{ font-family: var(--mono); font-size: 10px; color: var(--plum); opacity: .55; margin-top: 8px; }
+  .svy-scale{ display: flex; justify-content: space-between; margin-top: 6px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--plum); opacity: .55; }
+  .svy-find{ margin-top: 18px; padding-top: 16px; border-top: 1px solid rgba(74,59,92,0.12); font-family: var(--sans); font-size: 13px; line-height: 1.6; color: var(--plum); }
+  .svy-find strong{ color: var(--plum-deep); font-weight: 600; }
+
+  /* ---- Final hi-fi screens 2-up ---- */
+  .ld-final-screens{
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: clamp(18px, 3vw, 44px);
+    align-items: center;
+    margin-top: clamp(26px, 3vw, 40px);
+    padding: clamp(28px, 4vw, 56px) clamp(20px, 3vw, 44px);
+    border-radius: 18px;
+    background:
+      radial-gradient(70% 70% at 20% 0%, rgba(91,181,168,0.14), transparent 60%),
+      radial-gradient(70% 70% at 100% 100%, rgba(201,184,217,0.20), transparent 60%),
+      linear-gradient(160deg, #EFEAF2 0%, #E7EEEC 100%);
+    border: 1px solid rgba(74,59,92,0.10);
+  }
+  .ld-final-screens figure{ margin: 0; text-align: center; }
+  .ld-final-screens img{
+    width: 100%; max-width: 300px; height: auto; display: block; margin: 0 auto;
+    filter: drop-shadow(0 30px 50px rgba(46,36,56,0.28));
+  }
+  .ld-final-screens figcaption{
+    margin-top: 16px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--plum); opacity: .8;
+  }
+  @media (max-width: 680px){ .ld-final-screens{ grid-template-columns: 1fr; } }
+
+  /* ---- Prototype demo video ---- */
+  .ld-demo{
+    margin-top: clamp(26px, 3vw, 40px);
+    border-radius: 18px; overflow: hidden;
+    background:
+      radial-gradient(70% 80% at 50% 0%, rgba(91,181,168,0.16), transparent 60%),
+      linear-gradient(160deg, #20272F 0%, #12181F 100%);
+    border: 1px solid rgba(74,59,92,0.16);
+    box-shadow: 0 40px 80px -34px rgba(46,36,56,0.5);
+    padding: clamp(20px, 3vw, 40px);
+    text-align: center;
+  }
+  .ld-demo video{
+    width: auto; max-width: 100%; max-height: 78vh;
+    border-radius: 12px; display: block; margin: 0 auto;
+    background: #000;
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,0.6);
+  }
+  .ld-demo .ld-demo-cap{
+    margin-top: 16px;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    text-transform: uppercase; color: rgba(255,245,240,0.7);
+  }
+  .ld-iter-num{
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em;
+    text-transform: uppercase; color: var(--teal); margin-bottom: 10px;
+  }
+  .ld-iter-row h3{
+    font-family: var(--serif); font-weight: 700; font-size: clamp(22px,2.2vw,30px);
+    color: var(--plum-deep); margin: 0 0 12px; line-height: 1.1;
+  }
+  .ld-iter-row h3 .it{ font-style: italic; font-weight: 400; color: var(--teal); }
+  .ld-iter-row p{ font-family: var(--sans); font-size: 14px; line-height: 1.65; color: var(--plum); margin: 0 0 12px; max-width: 56ch; }
+  .ld-feedback{ display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .ld-figma-link{
+    display: inline-flex; align-items: center; gap: 9px;
+    margin-top: 16px;
+    padding: 11px 18px; border-radius: 999px;
+    background: var(--plum-deep); color: var(--offwhite);
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transition: background .3s ease, transform .3s ease;
+  }
+  .ld-figma-link:hover{ background: var(--teal); transform: translateY(-2px); }
+  .ld-figma-link svg{ width: 14px; height: 14px; }
+  .ld-feedback span{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em;
+    color: var(--plum-deep); background: rgba(91,181,168,0.14);
+    border: 1px solid rgba(91,181,168,0.3);
+    padding: 6px 11px; border-radius: 999px;
+  }
+  @media (max-width: 760px){
+    .ld-iter-row, .ld-iter-row:nth-child(even){ grid-template-columns: 1fr; }
+    .ld-iter-row:nth-child(even) .ld-iter-art{ order: 0; }
+  }
+
+  /* ---- Team ---- */
+  .ld-team{
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: clamp(18px, 2vw, 26px); margin-top: clamp(26px,3vw,40px);
+  }
+  .ld-member{ padding: clamp(24px,2.4vw,32px); border-radius: 16px; }
+  .ld-member .avatar{
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--teal), var(--lavender));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-weight: 700; font-size: 22px; color: #fff;
+    margin-bottom: 16px;
+  }
+  .ld-member h4{ font-family: var(--serif); font-weight: 700; font-size: 20px; color: var(--plum-deep); margin: 0 0 2px; }
+  .ld-member .role{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 12px;
+  }
+  .ld-member p{ font-family: var(--sans); font-size: 13px; line-height: 1.6; color: var(--plum); margin: 0; max-width: none; }
+  @media (max-width: 860px){ .ld-team{ grid-template-columns: 1fr; } }
+
+  /* ---- Takeaways ---- */
+  .ld-takeaways{ display: grid; grid-template-columns: repeat(3,1fr); gap: clamp(16px,2vw,24px); margin-top: clamp(24px,3vw,36px); }
+  .ld-take{ padding: clamp(24px,2.4vw,30px); border-radius: 16px; border-top: 3px solid var(--teal); }
+  .ld-take:nth-child(2){ border-top-color: var(--coral); }
+  .ld-take:nth-child(3){ border-top-color: var(--yellow); }
+  .ld-take h4{ font-family: var(--serif); font-weight: 700; font-size: clamp(17px,1.5vw,20px); color: var(--plum-deep); margin: 0 0 10px; line-height: 1.2; }
+  .ld-take p{ font-family: var(--sans); font-size: 13px; line-height: 1.6; color: var(--plum); margin: 0; max-width: none; }
+  @media (max-width: 860px){ .ld-takeaways{ grid-template-columns: 1fr; } }
+
+  @media (prefers-reduced-motion: reduce){ .count-up{ animation: none; } }
+
+  /* ---- Section TOC in the top nav ---- */
+  .case-nav{ gap: 18px; }
+  .case-nav .toc{
+    display: flex; gap: 2px; flex: 1; justify-content: center;
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--plum);
+  }
+  .case-nav .toc a{
+    position: relative; padding: 6px 9px; border-radius: 4px;
+    opacity: .8; transition: color .2s ease, opacity .2s ease;
+  }
+  .case-nav .toc a:hover{ color: var(--plum-deep); opacity: 1; }
+  .case-nav .toc a::after{
+    content: ""; position: absolute; left: 9px; right: 9px; bottom: -1px;
+    height: 2px; background: var(--teal); border-radius: 2px;
+    transform: scaleX(0); transform-origin: center;
+    transition: transform .35s cubic-bezier(.65,0,.35,1);
+  }
+  .case-nav .toc a.is-active{ color: var(--plum-deep); opacity: 1; }
+  .case-nav .toc a.is-active::after{ transform: scaleX(1); }
+  @media (max-width: 1080px){ .case-nav .toc{ display: none; } }
+
+  /* ---- Left scroll tracker: a padlock that rides the page ---- */
+  .scroll-tracker{
+    position: fixed; left: 26px; top: 0; bottom: 0;
+    z-index: 80; pointer-events: none;
+    opacity: 0; transition: opacity .5s ease .2s;
+  }
+  .scroll-tracker.is-ready{ opacity: 1; }
+  .scroll-tracker .st-rail{
+    position: absolute; left: 15px; top: 104px; bottom: 104px;
+    width: 2px; border-radius: 2px;
+    background: linear-gradient(180deg, rgba(91,181,168,0.12) 0%, rgba(91,181,168,0.42) 50%, rgba(91,181,168,0.12) 100%);
+  }
+  .scroll-tracker .st-fill{
+    position: absolute; left: 15px; top: 104px;
+    width: 2px; border-radius: 2px;
+    height: calc((100% - 208px) * var(--st-pos, 0));
+    background: var(--teal);
+  }
+  .scroll-tracker .st-thumb{
+    position: absolute; left: -4px;
+    top: 104px;
+    transform: translateY(-50%);
+    display: flex; align-items: center; gap: 11px;
+    transition: top .12s linear;
+  }
+  .scroll-tracker .st-lock{
+    width: 30px; height: 38px; display: block;
+    color: var(--teal);
+    filter: drop-shadow(0 5px 10px rgba(91,181,168,0.35));
+  }
+  /* The tracker lock latches shut the further down you scroll. JS sets the
+     shackle transform per frame (px/deg) so the value re-resolves reliably. */
+  .scroll-tracker .st-lock .stl-shackle{
+    fill: none; stroke: currentColor; stroke-width: 12; stroke-linecap: round;
+    transform-origin: 71px 66px;
+    transform: translateY(-10px) rotate(-32deg);
+    transition: transform .18s ease;
+  }
+  .scroll-tracker .st-lock .stl-body{ fill: currentColor; }
+  .scroll-tracker .st-lock .stl-hole{ fill: var(--offwhite); }
+  .scroll-tracker .st-pct{
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--teal); font-weight: 600;
+    padding: 4px 8px; border-radius: 999px;
+    background: rgba(91,181,168,0.10); border: 1px solid rgba(91,181,168,0.28);
+  }
+  @media (max-width: 1080px){
+    .scroll-tracker .st-pct{ display: none; }
+    .scroll-tracker{ left: 10px; }
+  }
+  @media (max-width: 720px){ .scroll-tracker{ display: none; } }
+  @media (prefers-reduced-motion: reduce){ .scroll-tracker .st-thumb{ transition: none; } }
+</style>
+</head>
+<body>
+
+<!-- Top nav -->
+<nav class="case-nav">
+  <a class="back" href="../Sabrina May Portfolio.html#work">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+    Back to case file
+  </a>
+  <div class="toc" id="sectionToc">
+    <a href="#why" data-section="why">Why</a>
+    <a href="#process" data-section="process">Process</a>
+    <a href="#psychology" data-section="psychology">Psychology</a>
+    <a href="#survey" data-section="survey">Survey</a>
+    <a href="#findings" data-section="findings">Problem</a>
+    <a href="#ideation" data-section="ideation">Ideation</a>
+    <a href="#iterations" data-section="iterations">Iterations</a>
+    <a href="#team" data-section="team">Team</a>
+  </div>
+  <div class="brand">Sabrina May</div>
+</nav>
+
+<!-- Left scroll tracker: a padlock that latches as you scroll -->
+<div class="scroll-tracker" id="scrollTracker" aria-hidden="true">
+  <div class="st-rail"></div>
+  <div class="st-fill"></div>
+  <div class="st-thumb">
+    <svg class="st-lock" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+      <g class="stl-shackle"><path d="M33 66 V48 a18 18 0 0 1 36 0 V66"/></g>
+      <rect class="stl-body" x="18" y="66" width="64" height="60" rx="15"/>
+      <circle class="stl-hole" cx="50" cy="90" r="7"/>
+      <rect class="stl-hole" x="46.5" y="94" width="7" height="17" rx="3.5"/>
+    </svg>
+    <span class="st-pct">0%</span>
+  </div>
+</div>
+
+<!-- Hero -->
+<header class="case-hero">
+  <div class="eyebrow">Case 04 · Digital Wellbeing · TCNJ Independent Study</div>
+  <h1>L<span class="lock-o" aria-hidden="true"><svg viewBox="0 0 100 140" role="img" aria-label="lock"><g class="lo-shackle"><path d="M33 66 V48 a18 18 0 0 1 36 0 V66"/></g><rect class="lo-body" x="18" y="66" width="64" height="60" rx="15"/><circle class="lo-hole" cx="50" cy="90" r="7"/><rect class="lo-hole" x="46.5" y="94" width="7" height="17" rx="3.5"/></svg></span>ck <span class="it">Down</span></h1>
+  <p class="ld-hero-sub">A better relationship with your phone, and with yourself.</p>
+</header>
+
+<!-- Meta strip -->
+<section class="case-cover" style="padding-bottom:0;">
+  <dl class="case-meta">
+    <div><dt>Role</dt><dd>Founder · Lead UX Researcher &amp; Designer</dd></div>
+    <div><dt>Context</dt><dd>TCNJ Independent Study</dd></div>
+    <div><dt>Advisor</dt><dd>Dr. Kelter (Design &amp; Creative Tech)</dd></div>
+    <div><dt>Team</dt><dd>3 designers + advisor</dd></div>
+    <div><dt>Methods</dt><dd>Survey · Behavioral research · Figma</dd></div>
+    <div><dt>Duration</dt><dd>8 weeks</dd></div>
+    <div><dt>Discipline</dt><dd>Behavioral &amp; mental-health design</dd></div>
+    <div><dt>Outcome</dt><dd>Interactive Figma prototype</dd></div>
+  </dl>
+</section>
+
+<!-- Cover: staged render of the final home screen -->
+<div class="ld-cover">
+  <div class="ld-cover-render">
+    <img data-src="img/lock-down/cover-home.jpg" alt="Lock Down home screen on an iPhone: today's screen time 4h 7m, 107% of limit, pickups, notifications, streak, quick actions, and a mood check-in" loading="lazy">
+    <div class="ld-cover-cap">Hi-fi · home dashboard</div>
+  </div>
+</div>
+
+<!-- Why it started -->
+<section class="ld-dark" id="why">
+  <div class="why-intro">
+  <div class="ld-eyebrow">Why it started</div>
+  <h2>During the pandemic, I was <em>addicted to my phone.</em></h2>
+  <p>I wanted to understand how the <strong>use of technology directly shapes our behavior and mental health</strong>, not as a vague worry, but as something I could measure and design against. So I proposed an independent study to Dr. Kelter and began Lock Down: a mobile concept and a piece of behavioral research, built together.</p>
+  <p>The premise was simple and a little ironic, an app to get you off the apps. The real question underneath it was harder: what actually moves someone to change a habit they already know is hurting them?</p>
+  </div>
+
+  <div class="ld-stats">
+    <div class="ld-stat glass" style="--g:1;"><div class="v"><span class="count-up" data-target="8" style="color: rgb(168, 255, 240)">0</span><span class="u" style="color: rgb(154, 253, 239)">hrs</span></div><div class="k">Self-reported daily screen time, ages 18–24</div></div>
+    <div class="ld-stat glass"><div class="v"><span class="count-up" data-target="6">0</span></div><div class="k">Countries surveyed, London to Venezuela</div></div>
+    <div class="ld-stat glass"><div class="v"><span class="count-up" data-target="3">0</span></div><div class="k">Cognitive journals: bias, hypocrisy, decision-making</div></div>
+    <div class="ld-stat glass"><div class="v"><span class="count-up" data-target="8">0</span></div><div class="k">Weeks from research to working prototype</div></div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="ld-section" id="process">
+  <div class="ld-eyebrow">The process</div>
+  <h2 class="ld-h2">Eight weeks, <em>research first.</em></h2>
+  <p class="ld-lead">Lock Down started as evidence, not screens. The first three weeks were entirely research: academic literature, a cross-country survey, and behavioral-science journaling. Design only began once the problem was defined.</p>
+
+  <div class="ld-timeline">
+    <div class="ld-week glass"><div class="wk"><b>01</b> Research</div><h4>Social media &amp; mental health</h4><p>Reviewed CDC and NCBI literature on how platforms affect wellbeing, and how governments evaluate their impact. Social media read as a mixed bag: harm and support both real.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>02</b> Survey</div><h4>Full-time college students</h4><p>Surveyed 18–24 year-olds across six countries. Preemptive-bias questions first, then personal info, then open-ended reflection, to catch what people assume before the data lands.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>03</b> Synthesis</div><h4>Defining the problem</h4><p>Cross-referenced consumer-behavior research with survey data and pre- vs. post-quarantine usage to isolate the psychological and design levers, and name the real problem.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>04</b> Features</div><h4>Scoping Lock Down</h4><p>From collective research and individual wireframes, the team narrowed the feature set and drafted the formal independent-study proposal.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>05</b> Lo-fi</div><h4>First Figma mockup</h4><p>Finished a low-fidelity mockup and used it to write the script for our user-testing interviews.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>06</b> Sprint</div><h4>Questioning the design</h4><p>Pressure-tested whether the app should keep its trajectory. Sprinted many designs and iterations of the main pages.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>07</b> Iterate</div><h4>Splitting the app</h4><p>Continued main-page iterations into two sections: Mental Health and Behavioral Change. Mahjustice tuned the color palette to keep the flow uniform.</p></div>
+    <div class="ld-week glass"><div class="wk"><b>08</b> Reflect</div><h4>Revised &amp; projected</h4><p>Reviewed the revised mockup against semester time limits, projected what a longer runway would allow, and drafted the proposal as our closing artifact.</p></div>
+  </div>
+</section>
+
+<!-- The Psychology -->
+<section class="ld-dark" id="psychology">
+  <div class="psych-intro">
+    <div class="ld-eyebrow">The psychology</div>
+    <p class="big-quote">"How do you hold someone accountable?"</p>
+    <h2>Call them a <em>hypocrite.</em></h2>
+  </div>
+  <div class="psych-cols">
+    <p>Drawing on research from <em>Hypocrisy and the Usage of Condoms</em> to <em>Moral Credentials &amp; Prejudice</em>, people will <strong>self-transcend to reaffirm their self-image</strong>. If you let users license their own screen-time in a semi-public way, then confront them with behavior-relevant data, you can shift attitude through the gap between what they said and what they do.</p>
+    <p>That gap is the engine. The survey was built to measure intrinsic perspective first: before any statistics were revealed, users predicted their own usage and their peers' usage. The distance between the guess and the truth is where the <strong>hypocritical licensing effect</strong> does its work.</p>
+  </div>
+
+  <div class="ld-grid-3" style="margin-top:34px;">
+    <div class="ld-card glass" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border-color:rgba(255,255,255,0.2);">
+      <div class="ld-card-tag" style="color:#FBC9A8;">Awareness</div>
+      <h4 style="color:#FFF6F0;">They already know</h4>
+      <p style="color:rgba(244,236,246,0.82);">Most users could estimate the time they spend, what they spend it on, and the average for their peers. Ignorance was never the problem.</p>
+    </div>
+    <div class="ld-card glass" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border-color:rgba(255,255,255,0.2);">
+      <div class="ld-card-tag" style="color:#FBC9A8;">Resignation</div>
+      <h4 style="color:#FFF6F0;">They've embraced doom</h4>
+      <p style="color:rgba(244,236,246,0.82);">Users tie their mental health to social-media use and accept it. System-1 thinking makes the phone hard to resist without self-transcendent motivation.</p>
+    </div>
+    <div class="ld-card glass" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border-color:rgba(255,255,255,0.2);">
+      <div class="ld-card-tag" style="color:#FBC9A8;">The lever</div>
+      <h4 style="color:#FFF6F0;">Licensing, made visible</h4>
+      <p style="color:rgba(244,236,246,0.82);">Surfacing a person's own stated limits against their real behavior creates the dissonance that drives change. That is the mechanism Lock Down designs around.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Survey signal -->
+<section class="ld-section" id="survey">
+  <div class="ld-eyebrow">From the survey · n = 15</div>
+  <h2 class="ld-h2">What 15 students <em>actually said.</em></h2>
+  <p class="ld-lead">Before any solution, the survey put numbers to the feeling. Two questions mattered most: how people rated their mental health, and how much they trusted their own willpower against the phone.</p>
+
+  <div class="svy-grid">
+    <div class="svy-card glass">
+      <p class="svy-q">"How's your mental health right now?"</p>
+      <div class="svy-n">15 responses · scale 1–10</div>
+      <div class="svy-bars">
+        <div class="svy-col"><div class="svy-val">0</div><div class="svy-bar" style="height:2%"></div><div class="svy-x">1</div></div>
+        <div class="svy-col"><div class="svy-val">1</div><div class="svy-bar" style="height:20%"></div><div class="svy-x">2</div></div>
+        <div class="svy-col"><div class="svy-val">5</div><div class="svy-bar peak" style="height:100%"></div><div class="svy-x">3</div></div>
+        <div class="svy-col"><div class="svy-val">2</div><div class="svy-bar" style="height:40%"></div><div class="svy-x">4</div></div>
+        <div class="svy-col"><div class="svy-val">1</div><div class="svy-bar" style="height:20%"></div><div class="svy-x">5</div></div>
+        <div class="svy-col"><div class="svy-val">1</div><div class="svy-bar" style="height:20%"></div><div class="svy-x">6</div></div>
+        <div class="svy-col"><div class="svy-val">4</div><div class="svy-bar" style="height:80%"></div><div class="svy-x">7</div></div>
+        <div class="svy-col"><div class="svy-val">1</div><div class="svy-bar" style="height:20%"></div><div class="svy-x">8</div></div>
+        <div class="svy-col"><div class="svy-val">0</div><div class="svy-bar" style="height:2%"></div><div class="svy-x">9</div></div>
+        <div class="svy-col"><div class="svy-val">0</div><div class="svy-bar" style="height:2%"></div><div class="svy-x">10</div></div>
+      </div>
+      <div class="svy-scale"><span>Struggling</span><span>Thriving</span></div>
+      <p class="svy-find"><strong>Bimodal, and skewed low.</strong> The biggest cluster sat at 3 out of 10, with a second bump at 7. Most students rated their mental health middling-to-poor, and tied it to their phones.</p>
+    </div>
+
+    <div class="svy-card glass">
+      <p class="svy-q">"What's your self-control like with temptation?"</p>
+      <div class="svy-n">15 responses · scale 1–5</div>
+      <div class="svy-bars">
+        <div class="svy-col"><div class="svy-val">1</div><div class="svy-bar" style="height:14%"></div><div class="svy-x">1</div></div>
+        <div class="svy-col"><div class="svy-val">7</div><div class="svy-bar peak" style="height:100%"></div><div class="svy-x">2</div></div>
+        <div class="svy-col"><div class="svy-val">5</div><div class="svy-bar" style="height:71%"></div><div class="svy-x">3</div></div>
+        <div class="svy-col"><div class="svy-val">2</div><div class="svy-bar" style="height:29%"></div><div class="svy-x">4</div></div>
+        <div class="svy-col"><div class="svy-val">0</div><div class="svy-bar" style="height:2%"></div><div class="svy-x">5</div></div>
+      </div>
+      <div class="svy-scale"><span>No control</span><span>Total control</span></div>
+      <p class="svy-find"><strong>87% rated themselves 3 or below.</strong> Almost no one trusts their own willpower against the phone. That is the System-1 gap Lock Down is built to carry, not scold.</p>
+    </div>
+  </div>
+</section>
+
+<!-- The Findings / Problem -->
+<div class="ld-problem" id="findings">
+  <div class="inner glass">
+    <div class="lbl">The problem, defined</div>
+    <p class="stmt">People spend too much time on social media, and it is affecting their day to day lives. The tic of "checking the phone" compounds, and screen time grows exponentially from it.</p>
+  </div>
+</div>
+
+<!-- The Ideation -->
+<section class="ld-section" id="ideation">
+  <div class="ld-eyebrow">The ideation</div>
+  <h2 class="ld-h2">Cut the use, <em>and make the app do it for you.</em></h2>
+  <p class="ld-lead">If willpower fails under System-1 thinking, the interface has to carry the load. Eight features turn the research into friction in the right places, and rewards in the others.</p>
+
+  <div class="ld-features">
+    <div class="ld-feature glass"><div class="num">01</div><div><h4>Schedule social time</h4><p>Allot specific windows for social media instead of an open-ended feed.</p></div></div>
+    <div class="ld-feature glass"><div class="num">02</div><div><h4>App-specific timers</h4><p>Set a hard limit on the apps that pull you in the most.</p></div></div>
+    <div class="ld-feature glass"><div class="num">03</div><div><h4>Auto silent mode</h4><p>Silence the phone on a schedule so notifications stop initiating the loop.</p></div></div>
+    <div class="ld-feature glass"><div class="num">04</div><div><h4>Limit open apps</h4><p>Cap how many apps can be open at once to break compulsive switching.</p></div></div>
+    <div class="ld-feature glass"><div class="num">05</div><div><h4>Move apps off home</h4><p>One toggle hides social apps off the home screen, raising the cost of a tap.</p></div></div>
+    <div class="ld-feature glass"><div class="num">06</div><div><h4>Temporary disable</h4><p>Pause a social account without the dread of permanent deletion.</p></div></div>
+    <div class="ld-feature glass"><div class="num">07</div><div><h4>Weekly automation</h4><p>Re-disable accounts automatically so you never have to re-open Instagram to do it.</p></div></div>
+    <div class="ld-feature glass"><div class="num">08</div><div><h4>Behavior-relevant rewards</h4><p>Generate personal stats on improvements, slips, and benchmarks, the licensing data made motivating.</p></div></div>
+  </div>
+</section>
+
+<!-- Iterations -->
+<section class="ld-section" id="iterations">
+  <div class="ld-eyebrow">The iterations</div>
+  <h2 class="ld-h2">From notebook sketch to <em>shared system.</em></h2>
+  <p class="ld-lead">Four rounds, each driven by feedback from roommates, classmates, teachers, and the team. The throughline: condense, clarify, and unify a design three people could build together.</p>
+
+  <!-- Lo-fi exploration gallery -->
+  <div class="ld-gallery">
+    <figure>
+      <div class="g-frame"><img src="img/lock-down/lofi-home-sketch.jpg" alt="Hand-drawn Lock Down home screen sketch: Today view with a screen-time ring and a heart-rate ring" loading="lazy"></div>
+      <figcaption>Home screen sketch · Today view</figcaption>
+    </figure>
+    <figure>
+      <div class="g-frame"><img src="img/lock-down/lofi-home-flow.jpg" alt="Hand-drawn flow linking the home screen to settings and summary/data screens" loading="lazy"></div>
+      <figcaption>Flow sketch · settings &amp; data</figcaption>
+    </figure>
+    <figure>
+      <div class="g-frame"><img src="img/lock-down/proto-flow.png" alt="Figma prototype flow showing connections between Lock Down screens" loading="lazy"></div>
+      <figcaption>Figma prototype flow</figcaption>
+    </figure>
+    <figure>
+      <div class="g-frame"><img src="img/lock-down/midfi-screens-labeled.png" alt="Inventory of mid-fidelity Lock Down screens: login, menu, ghost mode, disabler, limiter, silent mode" loading="lazy"></div>
+      <figcaption>Mid-fi screen inventory</figcaption>
+    </figure>
+  </div>
+
+  <div class="ld-iter">
+    <div class="ld-iter-row">
+      <div class="ld-iter-art">
+        <img src="img/lock-down/iter1-menu-sketch.jpg" alt="First rough wireframe: the Lock Down menu with Schedule, Timer, Silent mode, Limiter, Disabler, and Ghost mode" loading="lazy">
+      </div>
+      <div>
+        <div class="ld-iter-num">01 · Paper &amp; iPad</div>
+        <h3>First <span class="it">sketch</span></h3>
+        <p>Covering the original six Lock Down features, I sketched on iPad and notebook. I studied Fitbit, Headspace, Figma community sets, and Duolingo to learn the patterns behavioral-change apps lean on: widgets, a clean surface, plain-language descriptions, and statistics for accountability.</p>
+      </div>
+    </div>
+
+    <div class="ld-iter-row">
+      <div class="ld-iter-art">
+        <img src="img/lock-down/iter2-sprint2-notes.jpg" alt="Design Sprint 2 notes and a profile-screen sketch exploring a bottom bar, hamburger nav, icons, and a mood board" loading="lazy">
+      </div>
+      <div>
+        <div class="ld-iter-num">02 · Toward a system</div>
+        <h3>One <span class="it">bottom bar</span></h3>
+        <p>I introduced a shared bottom navigation and brought it to the team so our separate sections could read as one app. This round focused on translating my pages into Rebecca's, and defining the uniform system that landed in the final design.</p>
+      </div>
+    </div>
+
+    <div class="ld-iter-row">
+      <div class="ld-iter-art">
+        <img src="img/lock-down/iter3-midfi-screens.png" alt="First Figma prototype: mid-fidelity Lock Down screens including login, menu, ghost mode, disabler, limiter, and silent mode" loading="lazy">
+      </div>
+      <div>
+        <div class="ld-iter-num">03 · First prototype</div>
+        <h3>Function before <span class="it">finish</span></h3>
+        <p>I prototyped the layout and flow in Figma before styling, starting from a basic login template so the structure could be judged on its own. Roommates, classmates, and teachers reviewed it and pushed for changes.</p>
+        <div class="ld-feedback">
+          <span>Condense functionality</span>
+          <span>Add a timer</span>
+          <span>Reword components</span>
+          <span>Add contrast</span>
+        </div>
+        <a class="ld-figma-link" href="https://www.figma.com/design/geGExvVDfCHJEAKAxrrHNs/Lockdown-Final?node-id=157-308" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14L21 3"/></svg>
+          Open the basic template in Figma
+        </a>
+      </div>
+    </div>
+
+    <div class="ld-iter-row">
+      <div class="ld-iter-art">
+        <img src="img/lock-down/final-board.png" alt="The combined Figma board showing every Lock Down flow across green, blue, and yellow color variants" loading="lazy">
+      </div>
+      <div>
+        <div class="ld-iter-num">Final · Combined</div>
+        <h3>Palette, polish, <span class="it">handoff</span></h3>
+        <p>In the last week we merged prototypes with Mahjustice's color design and made final adjustments to Lock Down. Kel moderated over Zoom while we worked through Figma shortcuts, copying and swapping components, and made the group decisions that set the app's final look.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full-width prototype flow showcase -->
+  <div class="ld-flow-show">
+    <img src="img/lock-down/proto-flow.png" alt="The connected Lock Down prototype: login through Lock Down menu into Ghost Mode, Disabler, Limiter, and Silent Mode with flow arrows" loading="lazy">
+    <div class="ld-flow-cap" style="color: rgb(255,255,255);">The connected prototype · login → Lock Down menu → Ghost Mode, Disabler, Limiter, Silent Mode</div>
+  </div>
+
+  <!-- Final hi-fi screens -->
+  <div class="ld-final-screens">
+    <figure>
+      <img src="img/lock-down/final-home.png" alt="Final Lock Down home screen: Good morning Sabrina, 4h 7m screen time at 107% of limit, pickups, notifications, streak, quick actions, and a mood check-in" loading="lazy">
+      <figcaption>Final · home dashboard &amp; mood check-in</figcaption>
+    </figure>
+    <figure>
+      <img src="img/lock-down/final-profile.png" alt="Final Lock Down profile screen: day streak, check-ins, average reduction, notification toggles, and accountability options" loading="lazy">
+      <figcaption>Final · profile, notifications &amp; accountability</figcaption>
+    </figure>
+  </div>
+
+  <!-- Time screen hi-fi prototype -->
+  <div class="ld-demo">
+    <video id="ldTimeVideo" data-mp4="img/lock-down/time-demo.mp4" autoplay muted loop playsinline preload="auto" controls></video>
+    <div class="ld-demo-cap">Time screen · hi-fi prototype · tracking &amp; limits</div>
+  </div>
+
+  <!-- Feelings screen hi-fi prototype -->
+  <div class="ld-demo">
+    <video id="ldFeelingsVideo" data-mp4="img/lock-down/feelings-demo.mp4" autoplay muted loop playsinline preload="auto" controls></video>
+    <div class="ld-demo-cap">Feelings screen · hi-fi prototype · mood check-ins</div>
+  </div>
+
+  <!-- Prototype walkthrough video (loaded as a blob; the preview serve lacks
+       HTTP range support, so a normal video src errors — blob playback avoids it) -->
+  <div class="ld-demo">
+    <video id="ldDemoVideo" data-mp4="img/lock-down/prototype-demo.mp4" autoplay muted loop playsinline preload="auto" controls></video>
+    <div class="ld-demo-cap">The Figma prototype in motion · tap through Lock Down</div>
+  </div>
+</section>
+
+<!-- Takeaways -->
+<section class="ld-section" id="takeaways">
+  <div class="ld-eyebrow">What I took from it</div>
+  <h2 class="ld-h2">Research is the <em>design.</em></h2>
+  <div class="ld-takeaways">
+    <div class="ld-take glass"><h4>Behavior beats willpower</h4><p>People already know their habits hurt them. The design's job is not to inform, it is to engineer the moment of friction or motivation that actually shifts behavior.</p></div>
+    <div class="ld-take glass"><h4>Psychology can be a feature</h4><p>The hypocritical licensing effect is not a footnote, it is the core interaction. Naming the mechanism early gave every screen a reason to exist.</p></div>
+    <div class="ld-take glass"><h4>Scope to the runway</h4><p>An eight-week independent study forced honest tradeoffs. Documenting what a longer timeline would unlock turned a hard stop into a clear roadmap.</p></div>
+  </div>
+</section>
+
+<!-- Meet the team -->
+<section class="ld-section" id="team">
+  <div class="ld-eyebrow">Meet the team</div>
+  <h2 class="ld-h2">Three designers, <em>one advisor.</em></h2>
+  <div class="ld-team">
+    <div class="ld-member glass">
+      <div class="avatar">S</div>
+      <h4>Sabrina May</h4>
+      <div class="role">Founder · Behavioral &amp; MH design</div>
+      <p>I proposed the study to Professor Kel and founded Lock Down as a TCNJ independent study in Design &amp; Creative Technology. I ran the cross-country research on students' pandemic relationship with their phones, then designed the behavioral-change features and tied them to the mental-health side.</p>
+    </div>
+    <div class="ld-member glass">
+      <div class="avatar" style="background:linear-gradient(135deg,var(--coral),var(--yellow));">R</div>
+      <h4>Rebecca Jalowics</h4>
+      <div class="role">Mental Health UX</div>
+      <p>Rebecca and I bonded over the irony of building an app to get you off the apps. We agreed Lock Down would have two halves: mental health and behavioral change. She led the Mental Health UX and organized our weekly meetings.</p>
+    </div>
+    <div class="ld-member glass">
+      <div class="avatar" style="background:linear-gradient(135deg,var(--lavender),var(--plum));">M</div>
+      <h4>Mahjustice Murphy</h4>
+      <div class="role">Visual &amp; Graphic Design</div>
+      <p>Mahjustice joined for the visual and graphic side, bringing the app's aesthetic together. He built the color board and icon set that gave Lock Down its uniform, calming surface.</p>
+    </div>
+  </div>
+  <p class="ld-lead" style="margin-top:28px;font-family:var(--serif);font-style:italic;color:var(--plum-deep);">Advised by Dr. Kelter ("Kel"), TCNJ Department of Design &amp; Creative Technology.</p>
+</section>
+
+<!-- Next case -->
+<section class="case-next" style="margin-top:clamp(56px,7vw,104px);">
+  <div class="case-next-inner">
+    <div>
+      <div class="case-next-eyebrow">Next case · 05 of 07</div>
+      <div class="case-next-title">X-Change <span class="it">Startup</span></div>
+    </div>
+    <a class="case-next-link" href="x-change.html">
+      Open file
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="case-foot">
+  <div>© 2026 Sabrina May · Case 04</div>
+  <div>Lock Down · TCNJ Independent Study</div>
+</footer>
+
+<script>
+// Count-up animation for the stat strip.
+(function(){
+  var els = document.querySelectorAll('.count-up');
+  if (!els.length || !('IntersectionObserver' in window)) return;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animate(el){
+    var target = parseFloat(el.getAttribute('data-target')) || 0;
+    if (reduce){ el.textContent = target; return; }
+    var dur = 1200, t0 = performance.now();
+    function step(now){
+      var p = Math.min(1, (now - t0) / dur);
+      var e = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(target * e);
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  var seen = new WeakSet();
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if (en.isIntersecting && !seen.has(en.target)){ seen.add(en.target); animate(en.target); }
+    });
+  }, { threshold: 0.5 });
+  els.forEach(function(el){ io.observe(el); });
+})();
+
+// Scroll tracker: padlock rides the rail and latches shut as you descend.
+(function(){
+  var tracker = document.getElementById('scrollTracker');
+  if (!tracker) return;
+  function update(){
+    var doc = document.documentElement;
+    var scrollable = doc.scrollHeight - window.innerHeight;
+    var pct = scrollable > 0 ? (window.scrollY / scrollable) : 0;
+    pct = Math.max(0, Math.min(1, pct));
+    tracker.style.setProperty('--st-pos', pct.toFixed(4));
+    var label = tracker.querySelector('.st-pct');
+    if (label) label.textContent = Math.round(pct * 100) + '%';
+    // Drive thumb position + shackle latch directly (calc(var()) on a
+    // transitioned property does not re-resolve, so set them here).
+    var rail = tracker.querySelector('.st-rail');
+    var thumb = tracker.querySelector('.st-thumb');
+    if (rail && thumb){
+      var top = 104 + (tracker.clientHeight - 208) * pct;
+      thumb.style.top = top + 'px';
+    }
+    var shackle = tracker.querySelector('.stl-shackle');
+    if (shackle){
+      var lift = -10 * (1 - pct);
+      var rot = -32 * (1 - pct);
+      shackle.style.transform = 'translateY(' + lift.toFixed(2) + 'px) rotate(' + rot.toFixed(2) + 'deg)';
+    }
+  }
+  tracker.classList.add('is-ready');
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+})();
+
+// Active-section highlighter for the nav TOC.
+(function(){
+  var toc = document.getElementById('sectionToc');
+  if (!toc) return;
+  var links = Array.prototype.slice.call(toc.querySelectorAll('a[data-section]'));
+  var sections = links.map(function(a){
+    return { link: a, el: document.getElementById(a.getAttribute('data-section')) };
+  }).filter(function(s){ return s.el; });
+  if (!sections.length) return;
+  function setActive(id){
+    links.forEach(function(a){ a.classList.toggle('is-active', a.getAttribute('data-section') === id); });
+  }
+  if ('IntersectionObserver' in window){
+    var visible = new Map();
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) visible.set(e.target.id, e.intersectionRatio);
+        else visible.delete(e.target.id);
+      });
+      var best = null, bestRatio = 0;
+      visible.forEach(function(ratio, id){ if (ratio > bestRatio){ bestRatio = ratio; best = id; } });
+      if (best) setActive(best);
+    }, { rootMargin: '-30% 0px -50% 0px', threshold: [0, 0.1, 0.25, 0.5, 0.75, 1] });
+    sections.forEach(function(s){ io.observe(s.el); });
+  } else {
+    function upd(){
+      var y = window.scrollY + window.innerHeight * 0.35;
+      var current = sections[0].el.id;
+      for (var i = 0; i < sections.length; i++){ if (sections[i].el.offsetTop <= y) current = sections[i].el.id; }
+      setActive(current);
+    }
+    window.addEventListener('scroll', upd, { passive: true });
+    upd();
+  }
+})();
+
+// Smooth-scroll for TOC clicks (accounts for sticky nav height).
+(function(){
+  var nav = document.querySelector('.case-nav');
+  document.querySelectorAll('#sectionToc a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var id = a.getAttribute('href').slice(1);
+      var target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      var offset = (nav ? nav.offsetHeight : 0) + 12;
+      var y = target.getBoundingClientRect().top + window.scrollY - offset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    });
+  });
+})();
+
+// Prototype demo videos: the preview serve does not support HTTP range
+// requests, which the <video> element needs. Fetch each file (with the
+// document's auth token) as a blob and play it from an object URL instead.
+(function(){
+  // Load each video directly first (works in a downloaded copy / file:// / real
+  // host); fall back to a blob fetch only if that fails (preview sandbox lacks
+  // HTTP Range support).
+  function wire(v){
+    var src = v.getAttribute('data-mp4') || v.getAttribute('data-src');
+    if (!src) return;
+    var triedBlob = false;
+    v.addEventListener('error', function(){
+      if (triedBlob) return; triedBlob = true;
+      var qs = window.location.search || '';
+      var url = src.indexOf('?') === -1 ? src + qs : src;
+      fetch(url, {credentials: 'include'}).then(function(r){ return r.blob(); }).then(function(blob){
+        v.src = URL.createObjectURL(blob);
+        v.load();
+        var p = v.play(); if (p && p.catch) p.catch(function(){});
+      }).catch(function(){});
+    });
+    v.src = src;
+    try { v.load(); } catch(e){}
+    var p = v.play(); if (p && p.catch) p.catch(function(){});
+  }
+  function init(){ document.querySelectorAll('video[data-mp4],video[data-src]').forEach(wire); }
+  if (document.readyState === 'complete') init();
+  else window.addEventListener('load', init);
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script>
+// Preview sandbox shim: append the document auth token to relative img/video srcs.
+(function(){
+  var qs = window.location.search || '';
+  function activate(){
+    document.querySelectorAll('img[data-src], video[data-src]').forEach(function(el){
+      if (el.getAttribute('src')) return;
+      var s = el.getAttribute('data-src'); if (!s) return;
+      el.src = (qs && s.indexOf('?') === -1 && !/^(https?:|data:|blob:)/.test(s)) ? s + qs : s;
+    });
+    if (qs) {
+      document.querySelectorAll('img[src], video[src]').forEach(function(el){
+        var s = el.getAttribute('src');
+        if (!s || /^(https?:|data:|blob:)/.test(s) || s.indexOf('?') !== -1) return;
+        el.setAttribute('src', s + qs);
+      });
+      document.querySelectorAll('a.file-link[href]').forEach(function(el){
+        var s = el.getAttribute('href');
+        if (!s || /^(https?:|data:|blob:|#|mailto:)/.test(s) || s.indexOf('?') !== -1) return;
+        el.setAttribute('href', s + qs);
+      });
+    }
+  }
+  if (document.readyState === 'complete') activate(); else window.addEventListener('load', activate);
+})();
+</script>
+<title>X·change · Sabrina May</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ===== Base (inlined from the portfolio case system) ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--offwhite);color:var(--plum-deep);font-family:var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{line-height:1.5}
+a{color:inherit;text-decoration:none}
+:root{
+  --lavender:#C9B8D9; --plum:#4A3B5C; --plum-deep:#23304A;
+  --offwhite:#FAF7F2; --paper:#EAF1F6;
+  --yellow:#F5C842; --teal:#5BB5A8; --coral:#FF8B73;
+  --xblue:#2A6FDB; --xink:#16335C; --xmint:#56C9BE; --xsky:#8FC7E8;
+  --serif:'Fraunces', Georgia, serif;
+  --sans:'Inter', system-ui, sans-serif;
+  --mono:'IBM Plex Mono', ui-monospace, monospace;
+}
+.case-nav{
+  display:flex; align-items:center; gap:18px; justify-content:space-between;
+  padding: 20px clamp(28px,7vw,128px);
+  position:sticky; top:0; z-index:50;
+  background: rgba(250,247,242,0.85);
+  backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border-bottom: 1px solid rgba(35,48,74,0.08);
+}
+.case-nav .back{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--plum-deep);
+  padding: 10px 16px 10px 12px; border-radius:999px; border:1px solid rgba(35,48,74,0.15);
+  transition: background .25s, color .25s, transform .25s; white-space:nowrap;
+}
+.case-nav .back:hover{ background: var(--xink); color: var(--paper); transform: translateX(-2px); }
+.case-nav .back svg{ width:14px; height:14px; transition: transform .3s; }
+.case-nav .back:hover svg{ transform: translateX(-3px); }
+.case-nav .toc{ display:flex; gap:2px; flex:1; justify-content:center; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum); }
+.case-nav .toc a{ position:relative; padding:6px 9px; border-radius:4px; opacity:.8; transition:color .2s,opacity .2s; }
+.case-nav .toc a:hover{ color:var(--plum-deep); opacity:1; }
+.case-nav .toc a::after{ content:""; position:absolute; left:9px; right:9px; bottom:-1px; height:2px; background:var(--xblue); border-radius:2px; transform:scaleX(0); transform-origin:center; transition:transform .35s cubic-bezier(.65,0,.35,1); }
+.case-nav .toc a.is-active{ color:var(--plum-deep); opacity:1; }
+.case-nav .toc a.is-active::after{ transform:scaleX(1); }
+@media (max-width:1080px){ .case-nav .toc{ display:none; } }
+.case-nav .brand{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:16px; color:var(--plum-deep); white-space:nowrap; }
+
+/* ===== Scroll tracker: a paper plane that flies down ===== */
+.scroll-tracker{ position:fixed; left:26px; top:0; bottom:0; z-index:80; pointer-events:none; opacity:0; transition:opacity .5s ease .2s; }
+.scroll-tracker.is-ready{ opacity:1; }
+.scroll-tracker .st-rail{ position:absolute; left:15px; top:104px; bottom:104px; width:2px; border-radius:2px; background:linear-gradient(180deg, rgba(42,111,219,0.12) 0%, rgba(42,111,219,0.4) 50%, rgba(42,111,219,0.12) 100%); }
+.scroll-tracker .st-fill{ position:absolute; left:15px; top:104px; width:2px; border-radius:2px; height:calc((100% - 208px) * var(--st-pos,0)); background:var(--xblue); }
+.scroll-tracker .st-thumb{ position:absolute; left:-5px; top:104px; transform:translateY(-50%); display:flex; align-items:center; gap:11px; transition:top .12s linear; }
+.scroll-tracker .st-plane{ width:30px; height:30px; display:block; color:var(--xblue); filter:drop-shadow(0 5px 10px rgba(42,111,219,0.35)); transition:transform .18s ease; }
+.scroll-tracker .st-pct{ font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--xblue); font-weight:600; padding:4px 8px; border-radius:999px; background:rgba(42,111,219,0.10); border:1px solid rgba(42,111,219,0.28); }
+@media (max-width:1080px){ .scroll-tracker .st-pct{ display:none; } .scroll-tracker{ left:10px; } }
+@media (max-width:720px){ .scroll-tracker{ display:none; } }
+
+/* ===== Hero ===== */
+.case-hero{ padding: clamp(56px,9vw,116px) clamp(28px,7vw,128px) clamp(32px,4vw,56px); max-width:1280px; margin:0 auto; }
+.case-hero .eyebrow{ display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--xblue); margin-bottom:26px; }
+.case-hero .eyebrow::before{ content:""; width:32px; height:1px; background:var(--xblue); opacity:.6; }
+.case-hero h1{ font-family:var(--serif); font-weight:900; font-size:clamp(64px,11vw,168px); line-height:0.92; letter-spacing:-0.03em; color:var(--xink); }
+.case-hero h1 .dot{ color:var(--xblue); }
+.case-hero h1 .ge{ font-style:italic; font-weight:500; color:var(--xblue); }
+/* Animated X: two strokes drawn like writing an X */
+.xc-x{ display:inline-block; width:0.92em; height:0.92em; vertical-align:-0.08em; margin-right:-0.04em; }
+.xc-x svg{ width:100%; height:100%; overflow:visible; display:block; }
+.xc-x path{ fill:none; stroke:var(--xink); stroke-width:12; stroke-linecap:round; stroke-dasharray:120; stroke-dashoffset:120; }
+.xc-x .s1{ animation:xcDrawX 3.6s ease-in-out infinite; }
+.xc-x .s2{ animation:xcDrawX 3.6s ease-in-out infinite; animation-delay:0.5s; }
+@keyframes xcDrawX{ 0%{ stroke-dashoffset:120; } 22%{ stroke-dashoffset:0; } 80%{ stroke-dashoffset:0; } 100%{ stroke-dashoffset:120; } }
+@media (prefers-reduced-motion: reduce){ .xc-x path{ stroke-dashoffset:0; animation:none; } }
+.case-hero .tagline{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:clamp(20px,2.4vw,32px); color:var(--xblue); line-height:1.3; margin-top:20px; max-width:26ch; }
+
+/* ===== Meta ===== */
+.case-cover{ max-width:1280px; margin:0 auto; padding:0 clamp(28px,7vw,128px); }
+.case-meta{ display:grid; grid-template-columns:repeat(4,1fr); gap:24px 32px; padding-top:28px; border-top:1px solid rgba(35,48,74,0.15); max-width:1100px; }
+.case-meta dt{ font-family:var(--mono); font-size:10px; letter-spacing:0.24em; text-transform:uppercase; color:var(--plum); opacity:.7; margin-bottom:8px; }
+.case-meta dd{ font-family:var(--serif); font-weight:500; font-size:clamp(15px,1.3vw,18px); color:var(--plum-deep); }
+.case-actions{ display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.case-actions a{ display:inline-flex; align-items:center; gap:9px; padding:11px 18px; border-radius:999px; border:1px solid rgba(35,48,74,0.18); font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum-deep); transition:background .3s,color .3s,transform .3s; }
+.case-actions a:hover{ background:var(--xblue); border-color:var(--xblue); color:#fff; transform:translateY(-2px); }
+.case-actions a svg{ width:14px; height:14px; }
+@media (max-width:760px){ .case-meta{ grid-template-columns:1fr 1fr; } }
+
+/* ===== Cover banner: full-bleed, login slide spans the screen ===== */
+.xc-cover{ width:100%; max-width:none; margin:clamp(40px,5vw,64px) 0 0; padding:0; }
+.xc-cover-banner{ position:relative; width:100%; overflow:hidden; display:flex; justify-content:center; align-items:center; background:#153bb2; }
+.xc-cover-banner img{ width:100%; max-width:1500px; height:auto; display:block; }
+
+/* ===== Sections ===== */
+.xc-section{ max-width:1180px; margin:0 auto; padding:clamp(56px,7vw,104px) clamp(28px,7vw,128px) 0; }
+.xc-eyebrow{ display:flex; align-items:center; gap:14px; font-family:var(--mono); font-size:11px; letter-spacing:0.24em; text-transform:uppercase; color:var(--xblue); margin-bottom:18px; }
+.xc-eyebrow::before{ content:""; width:30px; height:1px; background:var(--xblue); opacity:.7; }
+.xc-h2{ font-family:var(--serif); font-weight:700; font-size:clamp(28px,3.4vw,46px); line-height:1.08; letter-spacing:-0.018em; color:var(--xink); margin:0 0 18px; max-width:24ch; text-wrap:balance; }
+.xc-h2 em{ font-style:italic; font-weight:500; color:var(--xblue); }
+.xc-lead{ font-size:clamp(16px,1.15vw,18px); line-height:1.7; color:var(--plum); margin:0 0 16px; max-width:70ch; }
+.xc-lead strong{ color:var(--plum-deep); font-weight:600; }
+
+/* ===== Glass card ===== */
+.glass{ position:relative; isolation:isolate; overflow:hidden; background:linear-gradient(135deg, rgba(42,111,219,0.05) 0%, rgba(86,201,190,0.04) 100%), linear-gradient(180deg, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0.58) 100%); backdrop-filter:blur(16px) saturate(170%); -webkit-backdrop-filter:blur(16px) saturate(170%); border:1px solid rgba(255,255,255,0.55); box-shadow:0 24px 50px -30px rgba(22,51,92,0.28), inset 0 1px 0 rgba(255,255,255,0.85); border-radius:16px; }
+.glass::after{ content:""; position:absolute; left:0; right:0; top:0; height:55%; background:linear-gradient(180deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.15) 45%, transparent 100%); -webkit-mask:linear-gradient(180deg,#000 0%,transparent 100%); mask:linear-gradient(180deg,#000 0%,transparent 100%); opacity:.55; z-index:0; pointer-events:none; border-radius:inherit; }
+.glass>*{ position:relative; z-index:1; }
+
+/* ===== Dark block ===== */
+.xc-dark{ max-width:1180px; margin:clamp(56px,7vw,104px) auto 0; padding:clamp(48px,6vw,84px) clamp(28px,5vw,72px); border-radius:22px; position:relative; overflow:hidden; isolation:isolate; background:radial-gradient(80% 60% at 85% 0%, rgba(86,201,190,0.20), transparent 60%), radial-gradient(70% 80% at 0% 100%, rgba(42,111,219,0.28), transparent 60%), linear-gradient(160deg, #16335C 0%, #112A4A 60%, #0E2138 100%); color:#EAF3FB; border:1px solid rgba(255,255,255,0.10); box-shadow:0 40px 80px -32px rgba(14,33,56,0.6), inset 0 1px 0 rgba(255,255,255,0.10); }
+.xc-dark::before{ content:""; position:absolute; inset:0; pointer-events:none; z-index:0; background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.04) 50%, transparent 70%); }
+.xc-dark>*{ position:relative; z-index:1; }
+.xc-dark .xc-eyebrow{ color:#8FD8CF; }
+.xc-dark .xc-eyebrow::before{ background:#8FD8CF; }
+.xc-dark h2{ font-family:var(--serif); font-weight:700; font-size:clamp(30px,4vw,54px); line-height:1.06; letter-spacing:-0.02em; color:#F2F8FF; margin:0 0 8px; max-width:22ch; }
+.xc-dark h2 em{ font-style:italic; color:var(--xmint); font-weight:500; }
+.xc-dark p{ color:rgba(234,243,251,0.88); font-size:clamp(15px,1.1vw,18px); line-height:1.7; margin:18px 0 0; max-width:72ch; }
+.xc-dark p strong{ color:#fff; font-weight:600; }
+.xc-dark.center{ text-align:center; }
+.xc-dark.center h2, .xc-dark.center .xc-lead{ margin-left:auto; margin-right:auto; }
+.xc-dark.center .xc-eyebrow{ justify-content:center; }
+.xc-dark.center p{ margin-left:auto; margin-right:auto; }
+
+/* ===== Big animated stats ===== */
+.xc-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,1.8vw,24px); margin-top:clamp(28px,3vw,40px); }
+.xc-stat{ padding:clamp(22px,2vw,30px); border-radius:14px; }
+.xc-stat .v{ font-family:var(--serif); font-weight:900; font-size:clamp(38px,4.6vw,64px); line-height:1; color:var(--xink); letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+.xc-stat .v .u{ font-size:0.42em; font-style:italic; font-weight:500; color:var(--xblue); margin-left:2px; }
+.xc-stat .k{ margin-top:10px; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum); opacity:.78; line-height:1.5; font-weight:600; }
+.xc-dark .xc-stat{ background:linear-gradient(135deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06)); border:1px solid rgba(255,255,255,0.18); }
+.xc-dark .xc-stat .v{ color:#F2F8FF; }
+.xc-dark .xc-stat .v .u{ color:var(--xmint); }
+.xc-dark .xc-stat .k{ color:rgba(234,243,251,0.78); }
+@media (max-width:760px){ .xc-stats{ grid-template-columns:1fr; } }
+
+/* ===== Process timeline (design thinking) ===== */
+.xc-steps{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(14px,1.6vw,20px); margin-top:clamp(24px,3vw,36px); }
+.xc-step{ padding:24px 22px 26px; border-radius:14px; }
+.xc-step .st-no{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--xblue); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.xc-step .st-no b{ font-family:var(--serif); font-weight:900; font-style:italic; font-size:24px; color:var(--xink); }
+.xc-step h4{ font-family:var(--sans); font-weight:700; font-size:15px; color:var(--xink); margin:0 0 8px; }
+.xc-step p{ font-family:var(--sans); font-size:12.5px; line-height:1.55; color:var(--plum); margin:0; }
+@media (max-width:900px){ .xc-steps{ grid-template-columns:1fr 1fr; } }
+@media (max-width:520px){ .xc-steps{ grid-template-columns:1fr; } }
+
+/* ===== Image showcase ===== */
+.xc-figure{ margin-top:clamp(24px,3vw,38px); border-radius:18px; overflow:hidden; background:linear-gradient(160deg,#DCEAF2,#C2D9E8); border:1px solid rgba(35,48,74,0.12); box-shadow:0 30px 60px -34px rgba(22,51,92,0.4); padding:clamp(16px,2vw,28px); }
+.xc-figure img{ width:100%; height:auto; display:block; border-radius:10px; }
+.xc-figcap{ margin-top:14px; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:var(--plum); opacity:.75; }
+
+/* ===== 3-up cards ===== */
+.xc-grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px); margin-top:clamp(24px,3vw,36px); }
+.xc-card{ padding:clamp(24px,2.4vw,32px); border-radius:16px; }
+.xc-card .tag{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--coral); margin-bottom:12px; }
+.xc-card h4{ font-family:var(--serif); font-weight:600; font-size:clamp(18px,1.6vw,22px); color:var(--xink); margin:0 0 10px; line-height:1.2; }
+.xc-card p{ font-family:var(--sans); font-size:13.5px; line-height:1.6; color:var(--plum); margin:0; }
+@media (max-width:860px){ .xc-grid3{ grid-template-columns:1fr; } }
+
+/* ===== Feature list (app pages) ===== */
+.xc-features{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(14px,1.6vw,18px); margin-top:clamp(24px,3vw,36px); }
+.xc-feature{ display:grid; grid-template-columns:44px 1fr; gap:16px; align-items:start; padding:20px 24px; border-radius:14px; }
+.xc-feature .ic{ width:44px; height:44px; border-radius:11px; background:linear-gradient(150deg,var(--xblue),var(--xmint)); display:flex; align-items:center; justify-content:center; }
+.xc-feature .ic svg{ width:22px; height:22px; color:#fff; }
+.xc-feature h4{ font-family:var(--sans); font-weight:700; font-size:14.5px; color:var(--xink); margin:2px 0 4px; }
+.xc-feature p{ font-family:var(--sans); font-size:12.5px; line-height:1.5; color:var(--plum); margin:0; }
+@media (max-width:760px){ .xc-features{ grid-template-columns:1fr; } }
+
+/* ===== Test results ===== */
+.xc-results{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(14px,1.8vw,22px); margin-top:clamp(24px,3vw,36px); }
+.xc-result{ padding:clamp(22px,2.2vw,30px); border-radius:14px; text-align:center; }
+.xc-result .v{ font-family:var(--serif); font-weight:900; font-size:clamp(36px,4.2vw,56px); line-height:1; color:var(--xblue); font-variant-numeric:tabular-nums; }
+.xc-result .v .u{ font-size:0.45em; font-style:italic; font-weight:500; }
+.xc-result .k{ margin-top:10px; font-family:var(--sans); font-size:12.5px; line-height:1.5; color:var(--plum); }
+@media (max-width:760px){ .xc-results{ grid-template-columns:1fr 1fr; } }
+
+/* ===== Quote ===== */
+.xc-voices{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,22px); margin-top:clamp(24px,3vw,36px); }
+/* ===== Lo-fi wireframes ===== */
+.wf-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(12px,1.6vw,20px); margin-top:clamp(24px,3vw,36px); }
+.wf-item{ text-align:center; }
+.wf-phone{ position:relative; width:100%; aspect-ratio:9/18; border-radius:18px; background:#D7DEE6; padding:7px; box-shadow:0 18px 36px -22px rgba(22,51,92,0.4); border:1px solid rgba(35,48,74,0.12); }
+.wf-screen{ position:relative; height:100%; border-radius:12px; background:#F2F5F9; overflow:hidden; display:flex; flex-direction:column; gap:7px; padding:17px 9px 9px; }
+.wf-notch{ position:absolute; top:6px; left:50%; transform:translateX(-50%); width:32%; height:7px; border-radius:0 0 6px 6px; background:#B7C1CC; z-index:2; }
+.wf-line{ height:6px; border-radius:3px; background:#C2CCD6; }
+.wf-line.sm{ width:60%; } .wf-line.xs{ width:38%; height:5px; }
+.wf-block{ border-radius:6px; background:#CDD6DF; }
+.wf-circle{ border-radius:50%; background:#C2CCD6; flex:0 0 auto; }
+.wf-pill{ height:16px; border-radius:8px; background:#E4EAF0; border:1px solid #C7D0DA; }
+.wf-btn{ height:16px; border-radius:8px; background:#9FB0C0; width:56%; margin:3px auto 0; }
+.wf-row{ display:flex; gap:7px; align-items:center; }
+.wf-nav{ margin-top:auto; display:flex; justify-content:space-around; padding-top:7px; border-top:1px solid #DCE3EB; }
+.wf-nav i{ width:11px; height:11px; border-radius:3px; background:#C7D0DA; display:block; }
+.wf-nav i.on{ background:#7E90A2; }
+.wf-cap{ margin-top:10px; font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--plum); opacity:.72; }
+@media (max-width:860px){ .wf-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:480px){ .wf-grid{ grid-template-columns:1fr; max-width:260px; margin-left:auto; margin-right:auto; } }
+.xc-voice{ padding:clamp(22px,2.2vw,30px); border-radius:16px; }
+.xc-voice p{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:clamp(16px,1.4vw,19px); line-height:1.4; color:var(--xink); margin:0 0 14px; }
+.xc-voice .who{ font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--xblue); }
+@media (max-width:860px){ .xc-voices{ grid-template-columns:1fr; } }
+/* ===== Medium-fi gallery ===== */
+.mf-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(12px,1.6vw,20px); margin-top:clamp(24px,3vw,36px); align-items:start; }
+.mf-item{ text-align:center; }
+.mf-item img{ width:100%; height:auto; display:block; border-radius:14px; box-shadow:0 22px 44px -24px rgba(22,51,92,0.45); }
+.mf-cap{ margin-top:10px; font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--plum); opacity:.72; }
+@media (max-width:860px){ .mf-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:480px){ .mf-grid{ grid-template-columns:1fr; max-width:280px; margin-left:auto; margin-right:auto; } }
+
+/* ===== Hi-fi gallery ===== */
+.hf-grid{ display:grid; grid-template-columns:1.32fr 1fr 1fr 1fr 1fr; gap:clamp(12px,1.6vw,20px); margin-top:clamp(24px,3vw,36px); align-items:start; }
+.hf-item{ text-align:center; }
+.hf-shot{ width:100%; aspect-ratio:1080/2160; border-radius:16px; overflow:hidden; background:#0B1424; box-shadow:0 26px 50px -26px rgba(11,20,36,0.7); border:1px solid rgba(143,199,232,0.18); }
+.hf-shot img, .hf-shot video{ width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.hf-cap{ margin-top:10px; font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--plum); opacity:.72; }
+@media (max-width:860px){ .hf-grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:480px){ .hf-grid{ grid-template-columns:1fr; max-width:280px; margin-left:auto; margin-right:auto; } }
+/* Verification flow pair */
+.hf-verify{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(16px,2.4vw,32px); margin-top:clamp(24px,3vw,36px); max-width:760px; }
+.hf-verify .hf-shot{ aspect-ratio:1080/2040; }
+@media (max-width:560px){ .hf-verify{ grid-template-columns:1fr; max-width:300px; margin-left:auto; margin-right:auto; } }
+/* Mid -> Hi rationale */
+.hf-why{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px); margin-top:clamp(26px,3vw,40px); }
+.hf-rationale{ padding:clamp(24px,2.4vw,30px); border-radius:16px; }
+.hf-rationale .mv{ display:inline-flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--xblue); margin-bottom:12px; }
+.hf-rationale .mv .from{ color:var(--coral); } .hf-rationale .mv svg{ width:13px; height:13px; opacity:.7; }
+.hf-rationale h4{ font-family:var(--serif); font-weight:600; font-size:clamp(17px,1.5vw,20px); color:var(--xink); margin:0 0 10px; line-height:1.25; }
+.hf-rationale p{ font-family:var(--sans); font-size:13px; line-height:1.6; color:var(--plum); margin:0; }
+.hf-rationale .tlx{ display:inline-block; margin-top:12px; font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--xink); background:rgba(86,201,190,0.16); border:1px solid rgba(86,201,190,0.32); padding:5px 10px; border-radius:999px; }
+@media (max-width:860px){ .hf-why{ grid-template-columns:1fr; } }
+
+/* ===== Prototype embed ===== */
+.xc-proto{ display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:clamp(28px,4vw,56px); align-items:center; margin-top:clamp(26px,3vw,40px); }
+.xc-proto-frame{ position:relative; border-radius:30px; overflow:hidden; background:#0E2138; padding:10px; box-shadow:0 40px 80px -34px rgba(14,33,56,0.6); aspect-ratio:9/19.5; }
+.xc-proto-frame iframe{ width:100%; height:100%; border:0; border-radius:22px; display:block; background:#0E2138; }
+.xc-proto-poster{ position:relative; display:block; width:100%; height:100%; border-radius:22px; overflow:hidden; }
+.xc-proto-poster img{ width:100%; height:100%; object-fit:cover; object-position:top center; display:block; }
+.xc-proto-poster .play{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; background:linear-gradient(180deg,rgba(14,33,56,0.25),rgba(14,33,56,0.55)); transition:background .3s; }
+.xc-proto-poster:hover .play{ background:linear-gradient(180deg,rgba(14,33,56,0.15),rgba(14,33,56,0.4)); }
+.xc-proto-poster .play .disc{ width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,0.92); display:flex; align-items:center; justify-content:center; box-shadow:0 10px 30px -8px rgba(0,0,0,0.5); transition:transform .3s; }
+.xc-proto-poster:hover .play .disc{ transform:scale(1.08); }
+.xc-proto-poster .play .disc svg{ width:26px; height:26px; color:var(--xblue); margin-left:3px; }
+.xc-proto-poster .play .cap{ font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:#fff; text-shadow:0 1px 6px rgba(0,0,0,0.5); }
+.xc-proto-copy h3{ font-family:var(--serif); font-weight:700; font-size:clamp(22px,2.2vw,30px); color:var(--xink); margin:0 0 12px; line-height:1.15; }
+.xc-proto-copy h3 .it{ font-style:italic; font-weight:400; color:var(--xblue); }
+.xc-proto-copy p{ font-family:var(--sans); font-size:14px; line-height:1.65; color:var(--plum); margin:0 0 16px; max-width:52ch; }
+.xc-proto-launch{ display:inline-flex; align-items:center; gap:10px; padding:13px 22px; border-radius:999px; background:var(--xblue); color:#fff; font-family:var(--mono); font-size:11px; letter-spacing:0.16em; text-transform:uppercase; transition:background .3s,transform .3s; }
+.xc-proto-launch:hover{ background:var(--xink); transform:translateY(-2px); }
+.xc-proto-launch svg{ width:15px; height:15px; }
+.xc-qr{ display:flex; align-items:center; gap:14px; margin-top:22px; }
+.xc-qr img{ width:92px; height:92px; border-radius:12px; border:1px solid rgba(35,48,74,0.14); background:#fff; padding:7px; box-shadow:0 14px 28px -18px rgba(22,51,92,0.4); }
+.xc-qr .lbl{ font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--plum); line-height:1.7; }
+.xc-qr .lbl b{ color:var(--xblue); font-weight:600; }
+@media (max-width:760px){ .xc-proto{ grid-template-columns:1fr; } .xc-proto-frame{ max-width:300px; margin:0 auto; } }
+
+/* ===== Quote ===== */
+.xc-quote{ max-width:1180px; margin:clamp(40px,5vw,64px) auto 0; padding:0 clamp(28px,7vw,128px); }
+.xc-quote .inner{ padding:clamp(28px,3.4vw,48px); border-radius:18px; border-left:4px solid var(--xblue); }
+.xc-quote blockquote{ font-family:var(--serif); font-style:italic; font-weight:500; font-size:clamp(20px,2.2vw,30px); line-height:1.4; color:var(--xink); margin:0; }
+.xc-quote .cite{ margin-top:16px; font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--plum); }
+
+/* ===== Team ===== */
+.xc-team{ display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(16px,2vw,22px); margin-top:clamp(26px,3vw,40px); }
+.xc-member{ padding:clamp(22px,2.2vw,28px); border-radius:16px; }
+.xc-member .avatar{ width:52px; height:52px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:var(--serif); font-weight:700; font-size:20px; color:#fff; margin-bottom:14px; background:linear-gradient(135deg,var(--xblue),var(--xmint)); }
+.xc-member h4{ font-family:var(--serif); font-weight:700; font-size:18px; color:var(--xink); margin:0 0 2px; }
+.xc-member .role{ font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:var(--xblue); margin-bottom:10px; }
+.xc-member p{ font-family:var(--sans); font-size:12.5px; line-height:1.55; color:var(--plum); margin:0; }
+.xc-member.lead{ background:linear-gradient(135deg, rgba(42,111,219,0.10), rgba(255,255,255,0.02)), linear-gradient(180deg, rgba(255,255,255,0.82), rgba(255,255,255,0.58)); border-color:rgba(42,111,219,0.3); }
+@media (max-width:860px){ .xc-team{ grid-template-columns:1fr 1fr; } }
+@media (max-width:520px){ .xc-team{ grid-template-columns:1fr; } }
+
+/* ===== Hover lift ===== */
+@media (hover:hover){
+  .xc-step, .xc-card, .xc-feature, .xc-result, .xc-member, .xc-stat{ transition:transform .35s cubic-bezier(.2,.65,.25,1), box-shadow .35s ease; }
+  .xc-step:hover, .xc-card:hover, .xc-feature:hover, .xc-member:hover{ transform:translateY(-2px); box-shadow:0 32px 60px -28px rgba(22,51,92,0.4), inset 0 1px 0 rgba(255,255,255,0.95); }
+}
+
+/* ===== Next / footer ===== */
+.case-next{ background:var(--paper); border-top:1px solid rgba(35,48,74,0.12); padding:clamp(64px,8vw,120px) clamp(28px,7vw,128px); margin-top:clamp(56px,7vw,104px); }
+.case-next-inner{ max-width:1280px; margin:0 auto; display:flex; align-items:flex-end; justify-content:space-between; gap:32px; flex-wrap:wrap; }
+.case-next-eyebrow{ font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; color:var(--plum); opacity:.7; margin-bottom:14px; }
+.case-next-title{ font-family:var(--serif); font-weight:500; font-size:clamp(40px,5vw,64px); line-height:1; letter-spacing:-0.02em; color:var(--plum-deep); }
+.case-next-title .it{ font-style:italic; font-weight:400; color:var(--xblue); }
+.case-next-link{ display:inline-flex; align-items:center; gap:14px; padding:16px 26px; border-radius:999px; background:var(--xink); color:var(--paper); font-family:var(--mono); font-size:11px; letter-spacing:0.22em; text-transform:uppercase; transition:background .35s,transform .35s; }
+.case-next-link:hover{ background:var(--xblue); transform:translateY(-2px); }
+.case-next-link svg{ width:14px; height:14px; transition:transform .3s; }
+.case-next-link:hover svg{ transform:translateX(3px); }
+footer.case-foot{ padding:28px clamp(28px,7vw,128px); border-top:1px solid rgba(35,48,74,0.12); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap; font-family:var(--mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:var(--plum); opacity:.7; }
+
+/* ===== Scroll reveal ===== */
+.reveal{ opacity:0; transform:translateY(24px); transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.reveal.in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; transition:none; } .count-up{ animation:none; } }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav class="case-nav">
+  <a class="back" href="../Sabrina May Portfolio.html#work">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+    Back to case file
+  </a>
+  <div class="toc" id="sectionToc">
+    <a href="#mission" data-section="mission">Mission</a>
+    <a href="#process" data-section="process">Process</a>
+    <a href="#personas" data-section="personas">Personas</a>
+    <a href="#ideation" data-section="ideation">Ideation</a>
+    <a href="#wireframes" data-section="wireframes">Wireframes</a>
+    <a href="#mediumfi" data-section="mediumfi">Mid-fi</a>
+    <a href="#prototype" data-section="prototype">Interactive</a>
+    <a href="#hifi" data-section="hifi">Hi-fi</a>
+    <a href="#testing" data-section="testing">Testing</a>
+    <a href="#business" data-section="business">Business</a>
+    <a href="#team" data-section="team">Team</a>
+  </div>
+  <div class="brand">Sabrina May</div>
+</nav>
+
+<!-- Scroll tracker: paper plane -->
+<div class="scroll-tracker" id="scrollTracker" aria-hidden="true">
+  <div class="st-rail"></div>
+  <div class="st-fill"></div>
+  <div class="st-thumb">
+    <svg class="st-plane" viewBox="0 0 24 24" fill="currentColor"><path d="M2 12 L22 3 L15 22 L11 14 Z" opacity="0.95"/><path d="M11 14 L22 3" fill="none" stroke="#fff" stroke-width="1" opacity="0.5"/></svg>
+    <span class="st-pct">0%</span>
+  </div>
+</div>
+
+<!-- Hero -->
+<header class="case-hero">
+  <div class="eyebrow">Case 05 · Product Design · Startup Concept</div>
+  <h1><span class="xc-x" aria-hidden="true"><svg viewBox="0 0 100 100"><path class="s1" d="M16 16 L84 84"/><path class="s2" d="M84 16 L16 84"/></svg></span><span class="dot">·</span><span class="ge">change</span></h1>
+  <p class="tagline">An application built for exchange students.</p>
+</header>
+
+<section class="case-cover" style="padding-bottom:0;">
+  <dl class="case-meta">
+    <div><dt>Role</dt><dd>Lead Project Manager &amp; Designer</dd></div>
+    <div><dt>Team</dt><dd>4 (design, dev, business)</dd></div>
+    <div><dt>Context</dt><dd>Innovation studio &middot; startup pitch</dd></div>
+    <div><dt>Methods</dt><dd>Interviews &middot; Fly-on-the-wall &middot; SUS</dd></div>
+    <div><dt>Tools</dt><dd>Figma &middot; Adobe XD</dd></div>
+    <div><dt>Process</dt><dd>Design thinking, end to end</dd></div>
+    <div><dt>Outcome</dt><dd>Hi-fi prototype + investor pitch</dd></div>
+    <div><dt>Market</dt><dd>6M international students</dd></div>
+  </dl>
+  <div class="case-actions">
+    <a class="file-link" href="assets/xchange-research-paper.docx" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+      Research paper
+    </a>
+    <a class="file-link" href="assets/xchange-investor.pdf" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20v14H2z"/><path d="M8 21h8M12 17v4"/></svg>
+      Investor presentation
+    </a>
+    <a href="https://xd.adobe.com/view/dae64e4a-6314-4581-aacc-41de0c5d66f2-8fb5/?fullscreen&amp;hints=off" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3l14 9-14 9z"/></svg>
+      Live prototype
+    </a>
+  </div>
+</section>
+
+<!-- Cover -->
+<div class="xc-cover">
+  <div class="xc-cover-banner reveal">
+    <img data-src="img/x-change/login-screen.png" alt="X-change: Translation into Practice. The login screen on a phone, partnerships and digital advertising, on a royal-blue banner">
+  </div>
+</div>
+
+<!-- Mission -->
+<section class="xc-dark center" id="mission">
+  <div class="xc-eyebrow">The mission</div>
+  <h2>Safely connect <em>foreign students</em> in America.</h2>
+  <p class="xc-lead">Study abroad is growing every year, but a student's knowledge of their destination is built on online research and word of mouth. X-change is a social platform built only for exchange and international students, to share information, find people from home, and stay safe in a new country.</p>
+  <div class="xc-stats">
+    <div class="xc-stat reveal"><div class="v"><span class="count-up" data-target="6">0</span><span class="u">M</span></div><div class="k">International students worldwide, with no app for them</div></div>
+    <div class="xc-stat reveal"><div class="v"><span class="count-up" data-target="30">0</span><span class="u">%</span></div><div class="k">Face financial &amp; logistical challenges abroad</div></div>
+    <div class="xc-stat reveal"><div class="v"><span class="count-up" data-target="70">0</span><span class="u">%+</span></div><div class="k">Of non-white students say cultural needs go unmet</div></div>
+  </div>
+</section>
+
+<!-- Why it started -->
+<section class="xc-section" id="why">
+  <div class="xc-eyebrow reveal">Why it started</div>
+  <h2 class="xc-h2 reveal">It began with a <em>real student's</em> frustration.</h2>
+  <p class="xc-lead reveal">The team spent weeks hunting for a problem worth solving. The breakthrough came when our teammate, an exchange student herself, described what her own arrival in the US had actually felt like: confusing, isolating, and unsupported. That lived experience became the whole project.</p>
+  <div class="xc-grid3">
+    <div class="xc-card glass reveal">
+      <div class="tag">Problem 01</div>
+      <h4>No help with the logistics</h4>
+      <p>Little to no service guides students through visas, local laws, COVID rules, or even how to get from the airport to campus without overpaying for a taxi.</p>
+    </div>
+    <div class="xc-card glass reveal">
+      <div class="tag">Problem 02</div>
+      <h4>No channel to meet people</h4>
+      <p>There was almost no way to meet others from the same country or ethnicity, a key buffer against homesickness, and a hard ask for introverts.</p>
+    </div>
+    <div class="xc-card glass reveal">
+      <div class="tag">Problem 03</div>
+      <h4>No one source they trust</h4>
+      <p>Universities focus on the business of hosting students. The lifestyle, safety, and belonging side gets left to chance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Process -->
+<section class="xc-section" id="process">
+  <div class="xc-eyebrow reveal">The process</div>
+  <h2 class="xc-h2 reveal">Design thinking, <em>end to end.</em></h2>
+  <p class="xc-lead reveal">As lead PM and designer, I ran X-change through the full design-thinking loop. Research came first and shaped everything: we used three testing methods up front to strip out the team's assumptions before a single screen existed.</p>
+  <div class="xc-steps">
+    <div class="xc-step glass reveal"><div class="st-no"><b>01</b> Empathize</div><h4>Define the user</h4><p>Micro-analyzed the audience into three subsets: international, introverted, and safety-conscious students. Named their real wants and needs.</p></div>
+    <div class="xc-step glass reveal"><div class="st-no"><b>02</b> Ideate</div><h4>Shape the features</h4><p>Translated frustrations into a feature set and a wireframe, sorting wants from needs so every screen earned its place.</p></div>
+    <div class="xc-step glass reveal"><div class="st-no"><b>03</b> Prototype</div><h4>Build it in Figma</h4><p>Designed a rough hi-fi prototype in Figma and Adobe XD across five core pages, structured around the verified subsets.</p></div>
+    <div class="xc-step glass reveal"><div class="st-no"><b>04</b> Test</div><h4>Validate &amp; refine</h4><p>Ran a second round of SUS and A/B testing to fine-tune features and split needs cleanly across the app.</p></div>
+  </div>
+</section>
+
+<!-- Methods -->
+<section class="xc-section" id="methods">
+  <div class="xc-eyebrow reveal">How we removed bias</div>
+  <h2 class="xc-h2 reveal">Three ways to <em>listen</em> before designing.</h2>
+  <div class="xc-grid3">
+    <div class="xc-card glass reveal"><div class="tag">Method 01</div><h4>Formal interviews</h4><p>Asked the target audience what they wanted to see. Interviews translated raw frustration into clear, designable wants and needs.</p></div>
+    <div class="xc-card glass reveal"><div class="tag">Method 02</div><h4>Fly on the wall</h4><p>Observed the difficult tasks and social barriers international students face firsthand, without prompting or leading them.</p></div>
+    <div class="xc-card glass reveal"><div class="tag">Method 03</div><h4>SUS &amp; A/B testing</h4><p>System Usability Scale, user feedback, and journey mapping, so two versions could compete on real productivity, not opinion.</p></div>
+  </div>
+</section>
+
+<!-- Personas -->
+<section class="xc-section" id="personas">
+  <div class="xc-eyebrow reveal">Who we built for</div>
+  <h2 class="xc-h2 reveal">Two students, <em>two journeys.</em></h2>
+  <p class="xc-lead reveal">Personas kept the team honest. Shanté and Aria represented the introverted and the safety-conscious ends of the audience, and every feature was checked against their goals and frustrations.</p>
+  <div class="xc-figure reveal">
+    <img data-src="img/x-change/personas.png" alt="User personas: Shanté Quinn, 20, design student from France struggling to meet people; and Aria Yuen, 21, biology student from Taiwan whose top priority is safety">
+    <div class="xc-figcap">User personas &middot; Shanté Quinn (France) and Aria Yuen (Taiwan)</div>
+  </div>
+
+  <h3 class="xc-h2 reveal" style="font-size:clamp(22px,2.2vw,30px);margin-top:clamp(40px,5vw,64px);">What students <em>actually told us.</em></h3>
+  <p class="xc-lead reveal">Interviews and fly-on-the-wall sessions surfaced the same ache again and again: existing resources flatten very different students into one "international" box. These are real voices from the research.</p>
+  <div class="xc-voices">
+    <div class="xc-voice glass reveal"><p>"I want to connect with other students that also speak my language and are from my exchange program."</p><div class="who">Student from Taiwan, ethnically Burmese</div></div>
+    <div class="xc-voice glass reveal"><p>"I hate how my only resources are multicultural clubs. We aren't the same people."</p><div class="who">Student who is "Asian, not Asian American"</div></div>
+    <div class="xc-voice glass reveal"><p>"I feel lied to about the program here. I wish I had resources to guide me with honesty, and to show me what I can do in my area now."</p><div class="who">Student who feels "catfished by college"</div></div>
+  </div>
+</section>
+
+<!-- Ideation -->
+<section class="xc-section" id="ideation">
+  <div class="xc-eyebrow reveal">The ideation</div>
+  <h2 class="xc-h2 reveal">Five pages, <em>each with a purpose.</em></h2>
+  <p class="xc-lead reveal">The final architecture split the experience into five pages, each mapped to a real need. Safety is the number-one priority, so verification and document storage are built into the core, not bolted on.</p>
+  <div class="xc-features">
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9h18M9 21V9"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg></div><div><h4>Home &middot; landing feed</h4><p>Global posts, events, and verified reviews of schools, programs, and homestays. A feed tuned like TikTok or Instagram.</p></div></div>
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></div><div><h4>Network</h4><p>A personalized view of groups and events from direct connections, nudging students out the door and into their community.</p></div></div>
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V10l9-6 9 6v11"/><path d="M9 21v-6h6v6"/></svg></div><div><h4>University</h4><p>Followers, school descriptions, ratings, and reviews so a student can judge fit and find their community before arriving.</p></div></div>
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 4v5"/></svg></div><div><h4>Profile &middot; passport</h4><p>Languages, embassy info, and secure storage for visa, passport, and vaccine card, tracking the student's journey and return.</p></div></div>
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></div><div><h4>Notifications</h4><p>Events, connection requests, and region-specific safety and pandemic information surfaced when it matters.</p></div></div>
+    <div class="xc-feature glass reveal"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 2 4 5v6c0 5 3.5 8 8 11 4.5-3 8-6 8-11V5z"/></svg></div><div><h4>Verification, throughout</h4><p>University or program verification plus ID upload gate the whole platform. Safety is X-change's first principle.</p></div></div>
+  </div>
+</section>
+
+<!-- Wireframes -->
+<section class="xc-section" id="wireframes">
+  <div class="xc-eyebrow reveal">The wireframes</div>
+  <h2 class="xc-h2 reveal">Low fidelity <em>first.</em></h2>
+  <p class="xc-lead reveal">Before any color or brand, I sketched the five pages in grayscale to test structure on its own. Wireframes let the team argue about flow and hierarchy without getting distracted by visuals, and made it cheap to move things around after testing.</p>
+  <div class="wf-grid reveal">
+    <div class="wf-item">
+      <div class="wf-phone"><div class="wf-notch"></div><div class="wf-screen">
+        <div class="wf-circle" style="width:34px;height:34px;margin:14px auto 4px;"></div>
+        <div class="wf-line xs" style="margin:0 auto;width:44%;"></div>
+        <div style="flex:1"></div>
+        <div class="wf-pill"></div><div class="wf-pill"></div>
+        <div class="wf-btn"></div>
+        <div class="wf-line xs" style="margin:6px auto 0;width:40%;"></div>
+        <div style="flex:1"></div>
+      </div></div>
+      <div class="wf-cap">Login &middot; verify</div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-phone"><div class="wf-notch"></div><div class="wf-screen">
+        <div class="wf-row"><div class="wf-line sm"></div><div class="wf-circle" style="width:14px;height:14px;margin-left:auto;"></div></div>
+        <div class="wf-pill"></div>
+        <div class="wf-block" style="height:42px;"></div>
+        <div class="wf-line"></div><div class="wf-line sm"></div>
+        <div class="wf-block" style="height:42px;"></div>
+        <div class="wf-line"></div>
+        <div class="wf-nav"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+      </div></div>
+      <div class="wf-cap">Home &middot; feed</div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-phone"><div class="wf-notch"></div><div class="wf-screen">
+        <div class="wf-line sm"></div>
+        <div class="wf-row" style="justify-content:space-between;"><div class="wf-circle" style="width:26px;height:26px;"></div><div class="wf-circle" style="width:26px;height:26px;"></div><div class="wf-circle" style="width:26px;height:26px;"></div></div>
+        <div class="wf-block" style="height:34px;"></div>
+        <div class="wf-line xs"></div>
+        <div class="wf-block" style="height:34px;"></div>
+        <div class="wf-nav"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+      </div></div>
+      <div class="wf-cap">Network</div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-phone"><div class="wf-notch"></div><div class="wf-screen">
+        <div class="wf-block" style="height:40px;"></div>
+        <div class="wf-row"><div class="wf-line xs"></div><div class="wf-line xs" style="margin-left:auto;"></div></div>
+        <div class="wf-line"></div><div class="wf-line sm"></div>
+        <div class="wf-block" style="height:30px;"></div>
+        <div class="wf-line sm"></div>
+        <div class="wf-nav"><i></i><i></i><i class="on"></i><i></i><i></i></div>
+      </div></div>
+      <div class="wf-cap">University &middot; reviews</div>
+    </div>
+    <div class="wf-item">
+      <div class="wf-phone"><div class="wf-notch"></div><div class="wf-screen">
+        <div class="wf-circle" style="width:38px;height:38px;margin:8px auto 2px;"></div>
+        <div class="wf-line xs" style="margin:0 auto;width:46%;"></div>
+        <div class="wf-row" style="margin-top:6px;"><div class="wf-block" style="height:30px;flex:1;"></div><div class="wf-block" style="height:30px;flex:1;"></div></div>
+        <div class="wf-line"></div><div class="wf-line sm"></div>
+        <div class="wf-nav"><i></i><i></i><i></i><i></i><i class="on"></i></div>
+      </div></div>
+      <div class="wf-cap">Profile &middot; passport</div>
+    </div>
+  </div>
+</section>
+
+<!-- Medium fidelity -->
+<section class="xc-section" id="mediumfi">
+  <div class="xc-eyebrow reveal">Medium fidelity</div>
+  <h2 class="xc-h2 reveal">Adding <em>color, content, and brand.</em></h2>
+  <p class="xc-lead reveal">Once the structure held up, I brought the wireframes into medium-fidelity drafts: real copy, the X-change palette, the node logo, and the five-tab navigation. These are the working drafts where the feed, profile passport, and university reviews took their actual shape.</p>
+  <div class="mf-grid reveal">
+    <div class="mf-item"><img data-src="img/x-change/mf-login.png" alt="Medium-fidelity login screen with the X-change logo on a blue-to-mint gradient"><div class="mf-cap">COMMUNITY</div></div>
+    <div class="mf-item"><img data-src="img/x-change/mf-home.png" alt="Medium-fidelity home feed: stories, a homestay post, and a homestay rating"><div class="mf-cap">INSTITUTION</div></div>
+    <div class="mf-item"><img data-src="img/x-change/mf-network.png" alt="Medium-fidelity network screen: your events, past events, and your groups"><div class="mf-cap">LOG IN</div></div>
+    <div class="mf-item"><img data-src="img/x-change/mf-university.png" alt="Medium-fidelity university screen: The College of New Jersey with exchange and international counts, ratings, reviews, and population"><div class="mf-cap">HOME · FEED
+</div></div>
+    <div class="mf-item"><img data-src="img/x-change/mf-profile.png" alt="Medium-fidelity profile screen: languages spoken, and a Taiwan-to-USA exchange journey tracker"><div class="mf-cap">Profile &middot; passport</div></div>
+  </div>
+</section>
+
+<!-- Hi-fi mockup walkthrough -->
+<section class="xc-section" id="prototype">
+  <div class="xc-eyebrow reveal">INTERACTIVE MID FIDELITY MOCKUP</div>
+  <h2 class="xc-h2 reveal">The polished, <em>clickable mid mockup.</em></h2>
+  <p class="xc-lead reveal">The medium-fi drafts were refined into a high-fidelity, clickable mockup in Adobe XD, with every screen linked into a real flow. Tap through it below: login, the landing feed, network, university reviews, and the passport profile.</p>
+  <div class="xc-proto reveal">
+    <div class="xc-proto-frame">
+      <a class="xc-proto-poster" href="https://xd.adobe.com/view/dae64e4a-6314-4581-aacc-41de0c5d66f2-8fb5/?fullscreen&amp;hints=off" target="_blank" rel="noopener" aria-label="Open the X-change interactive walkthrough in Adobe XD">
+        <img data-src="img/x-change/mf-login.png" alt="X-change interactive mockup, login screen">
+        <span class="play"><span class="disc"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l16 9-16 9z"/></svg></span><span class="cap">Open walkthrough</span></span>
+      </a>
+    </div>
+    <div class="xc-proto-copy">
+      <h3>The interactive <span class="it">mockup.</span></h3>
+      <p>Built in Adobe XD, the mid-fi mockup links every screen into a real flow so testers could click through tasks, not just look at static drafts. Each of the five pages was wired to the verified subsets of users we defined in research.</p>
+      <p>This is the same mockup I ran the second round of SUS and A/B testing on, then refined into the final design.</p>
+      <a class="xc-proto-launch" href="https://xd.adobe.com/view/dae64e4a-6314-4581-aacc-41de0c5d66f2-8fb5/?fullscreen&amp;hints=off" target="_blank" rel="noopener">OPEN MID-FI MOCKUP IN XD</a>
+      <div class="xc-qr">
+        <a href="https://xd.adobe.com/view/dae64e4a-6314-4581-aacc-41de0c5d66f2-8fb5/?fullscreen&amp;hints=off" target="_blank" rel="noopener"><img data-src="img/x-change/walkthrough-qr.png" alt="QR code linking to the X-change Adobe XD prototype"></a>
+        <div class="lbl"><b>Scan to try it</b><br>Opens the live prototype on your phone</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- High fidelity -->
+<section class="xc-section" id="hifi">
+  <div class="xc-eyebrow reveal">High fidelity</div>
+  <h2 class="xc-h2 reveal">Refined with the <em>research in hand.</em></h2>
+  <p class="xc-lead reveal">The interactive mid-fi mockup did its job: it exposed where testers hesitated. The high-fidelity build is where I acted on that. The visual language went dark and glassy for contrast, the five tabs were re-balanced against cognitive load, and the safety-first verification flow was given real weight. Tap through the live screens below.</p>
+  <div class="hf-grid reveal">
+    <div class="hf-item"><div class="hf-shot"><video data-mp4="img/x-change/hf-home.mp4" autoplay muted loop playsinline preload="auto"></video></div><div class="hf-cap">Home</div></div>
+    <div class="hf-item"><div class="hf-shot"><video data-mp4="img/x-change/hf-checklist.mp4" autoplay muted loop playsinline preload="auto"></video></div><div class="hf-cap">Checklist</div></div>
+    <div class="hf-item"><div class="hf-shot"><img data-src="img/x-change/hf-community.png" alt="High-fidelity Community feed: verified exchange-student posts filtered by Visa, Banking, and Housing"></div><div class="hf-cap">Community</div></div>
+    <div class="hf-item"><div class="hf-shot"><video data-mp4="img/x-change/hf-network.mp4" autoplay muted loop playsinline preload="auto"></video></div><div class="hf-cap">Network</div></div>
+    <div class="hf-item"><div class="hf-shot"><img data-src="img/x-change/hf-profile.png" alt="High-fidelity Profile: verified student, exchange progress ring, stat tiles, and completed tasks"></div><div class="hf-cap">Profile</div></div>
+  </div>
+
+  <h3 class="xc-h2 reveal" style="font-size:clamp(22px,2.2vw,30px);margin-top:clamp(40px,5vw,64px);">Safety, made <em>tangible.</em></h3>
+  <p class="xc-lead reveal">Verification is X-change's first principle, so the hi-fi gave it a dedicated, reassuring flow: explain why, upload the student ID, and confirm, with encryption stated plainly to lower anxiety at the most sensitive step.</p>
+  <div class="hf-verify reveal">
+    <div class="hf-item"><div class="hf-shot"><img data-src="img/x-change/hf-security.png" alt="Verify your identity screen: why we verify, upload student ID, and an encryption reassurance"></div><div class="hf-cap">Verify · upload ID</div></div>
+    <div class="hf-item"><div class="hf-shot"><img data-src="img/x-change/hf-security-verified.png" alt="Verify your identity screen after upload: student_id.jpg uploaded, ready to submit for verification"></div><div class="hf-cap">Verify · confirmed</div></div>
+  </div>
+
+  <h3 class="xc-h2 reveal" style="font-size:clamp(22px,2.2vw,30px);margin-top:clamp(40px,5vw,64px);">What changed from mid-fi, <em>and why.</em></h3>
+  <p class="xc-lead reveal">Every shift between fidelities was driven by the second round of testing, not aesthetics. Three changes mattered most.</p>
+  <div class="hf-why">
+    <div class="hf-rationale glass reveal">
+      <div class="mv"><span class="from">Events near you</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg> Home</div>
+      <h4>One screen was doing too much</h4>
+      <p>The mid-fi crammed events, feed, and updates into a single "Events near you" view. NASA-TLX scores flagged it as a cognitive-load spike, too much information architecture in one place. In hi-fi, the feed became its own focused Home, so no single screen overloads the user.</p>
+      <span class="tlx">NASA-TLX · cognitive load ↓</span>
+    </div>
+    <div class="hf-rationale glass reveal">
+      <div class="mv"><span class="from">Profile draft</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg> Profile</div>
+      <h4>Progress had to be glanceable</h4>
+      <p>Students needed to gauge their settling-in progress and completed tasks at a glance, not read a list. Hi-fi introduced the exchange-progress ring, stat tiles, and a completed-tasks panel, and demanded high contrast, which is exactly why the dark glass panes were introduced.</p>
+      <span class="tlx">Visual hierarchy · high contrast</span>
+    </div>
+    <div class="hf-rationale glass reveal">
+      <div class="mv"><span class="from">Social drafts 2 &amp; 3</span> <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg> Community + Network</div>
+      <h4>The checklist earned its own tab</h4>
+      <p>The mid-fi merged social browsing and tasks together. Testing showed the onboarding checklist was too important to bury, so it was promoted to its own tab. The social drafts condensed into a verified Community feed and a Network tab, keeping each job distinct.</p>
+      <span class="tlx">IA · task separation</span>
+    </div>
+  </div>
+</section>
+
+<!-- Testing -->
+<section class="xc-dark" id="testing">
+  <div class="xc-eyebrow">Test &amp; validate</div>
+  <h2>The mockup <em>held up.</em></h2>
+  <p>After the drafts, I refined the hi-fi mockup and ran a second round of SUS forms and user testing. The signal was loud: students did not just tolerate X-change, they wanted it to exist.</p>
+  <div class="xc-results">
+    <div class="xc-result glass reveal" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border:1px solid rgba(255,255,255,0.18);"><div class="v" style="color:var(--xmint);"><span class="count-up" data-target="80">0</span><span class="u">%</span></div><div class="k" style="color:rgba(234,243,251,0.85);">found it mostly easy to use on the first prototype</div></div>
+    <div class="xc-result glass reveal" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border:1px solid rgba(255,255,255,0.18);"><div class="v" style="color:var(--xmint);"><span class="count-up" data-target="80">0</span><span class="u">%</span></div><div class="k" style="color:rgba(234,243,251,0.85);">rated the content clear and concise</div></div>
+    <div class="xc-result glass reveal" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border:1px solid rgba(255,255,255,0.18);"><div class="v" style="color:var(--xmint);"><span class="count-up" data-target="100">0</span><span class="u">%</span></div><div class="k" style="color:rgba(234,243,251,0.85);">wanted the app to actually be made</div></div>
+    <div class="xc-result glass reveal" style="background:linear-gradient(135deg,rgba(255,255,255,0.14),rgba(255,255,255,0.06));border:1px solid rgba(255,255,255,0.18);"><div class="v" style="color:var(--xmint);"><span class="count-up" data-target="100">0</span><span class="u">%</span></div><div class="k" style="color:rgba(234,243,251,0.85);">said no other app does this for them</div></div>
+  </div>
+</section>
+
+<!-- Business -->
+<section class="xc-section" id="business">
+  <div class="xc-eyebrow reveal">The business plan</div>
+  <h2 class="xc-h2 reveal">From prototype to <em>pitch.</em></h2>
+  <p class="xc-lead reveal">As lead PM, I carried X-change past the screens into the logistics of a real startup: a freemium model, partnership strategy, a lean tech stack, and revenue projections we could defend to investors.</p>
+  <div class="xc-grid3">
+    <div class="xc-card glass reveal"><div class="tag">Model</div><h4>Freemium</h4><p>Free to download with core features, paid upgrade for premium. The most cost-effective, low-friction way to grow a brand-new app's user base.</p></div>
+    <div class="xc-card glass reveal"><div class="tag">Partners</div><h4>Trust by alliance</h4><p>Education USA, NHSMUN, and TOEFL (used by 11,000+ universities) supply verified students and certify safety, at no cost to join.</p></div>
+    <div class="xc-card glass reveal"><div class="tag">Stack</div><h4>Lean &amp; scalable</h4><p>College developers on GitHub with AWS EC2 &amp; RDS free tier, scalable and cost-broken, so first-year spend is mostly just developers.</p></div>
+  </div>
+  <div class="xc-figure reveal">
+    <img data-src="img/x-change/business-model.png" alt="Business model slide: freemium value, target market of exchange and international students at Rutgers, Princeton, and TCNJ, partners, distribution, and revenue streams">
+    <div class="xc-figcap">Business model &middot; freemium, partnerships, and revenue streams</div>
+  </div>
+  <div class="xc-stats" style="margin-top:clamp(24px,3vw,36px);">
+    <div class="xc-stat glass reveal"><div class="v"><span class="count-up" data-target="50">0</span><span class="u">K</span></div><div class="k">Monthly active users targeted in year one</div></div>
+    <div class="xc-stat glass reveal"><div class="v"><span class="count-up" data-target="9">0</span><span class="u">K</span></div><div class="k">International students at Rutgers alone, from 125 countries</div></div>
+    <div class="xc-stat glass reveal"><div class="v">$<span class="count-up" data-target="250">0</span><span class="u">K</span></div><div class="k">Estimated first-year API worth of the data</div></div>
+  </div>
+</section>
+
+<!-- Quote -->
+<div class="xc-quote">
+  <div class="inner glass reveal">
+    <blockquote>"There is no other application on the market that offers this. Out of the 6 million international students in the world, none had catered to the needs and wants of this market."</blockquote>
+    <div class="cite">X-change research paper &middot; the innovation</div>
+  </div>
+</div>
+
+<!-- Team -->
+<section class="xc-section" id="team">
+  <div class="xc-eyebrow reveal">The team</div>
+  <h2 class="xc-h2 reveal">Four people, <em>one platform.</em></h2>
+  <div class="xc-team">
+    <div class="xc-member lead glass reveal"><div class="avatar">S</div><h4>Sabrina May</h4><div class="role">Lead PM &amp; Designer</div><p>Led the design-thinking process, ran research and testing, designed the prototype, and built the business plan and investor pitch.</p></div>
+    <div class="xc-member glass reveal"><div class="avatar" style="background:linear-gradient(135deg,var(--coral),var(--yellow));">G</div><h4>Gabriella Barquin</h4><div class="role">Research &amp; insight</div><p>The exchange student whose lived experience sparked X-change, and who grounded the team in the real problem.</p></div>
+    <div class="xc-member glass reveal"><div class="avatar" style="background:linear-gradient(135deg,var(--xmint),var(--xsky));">T</div><h4>Timothy Wood</h4><div class="role">Strategy &amp; testing</div><p>Shaped the testing approach and the challenges analysis, from feasibility to competitive positioning.</p></div>
+    <div class="xc-member glass reveal"><div class="avatar" style="background:linear-gradient(135deg,var(--lavender),var(--xblue));">C</div><h4>Choong Nyeon Kim</h4><div class="role">Product &amp; tech</div><p>Worked through the technical feasibility and the architecture that made the platform buildable.</p></div>
+  </div>
+</section>
+
+<!-- Next -->
+<section class="case-next">
+  <div class="case-next-inner">
+    <div>
+      <div class="case-next-eyebrow">Next case · 06 of 07</div>
+      <div class="case-next-title">Old Barracks <span class="it">Museum</span></div>
+    </div>
+    <a class="case-next-link" href="old-barracks.html">
+      Open file
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</section>
+
+<footer class="case-foot">
+  <div>© 2026 Sabrina May · Case 05</div>
+  <div>X·change · Startup Concept</div>
+</footer>
+
+<script>
+// Scroll tracker: paper plane rides + tilts with progress.
+(function(){
+  var tracker=document.getElementById('scrollTracker'); if(!tracker) return;
+  function update(){
+    var doc=document.documentElement;
+    var scrollable=doc.scrollHeight - window.innerHeight;
+    var pct=scrollable>0 ? window.scrollY/scrollable : 0; pct=Math.max(0,Math.min(1,pct));
+    tracker.style.setProperty('--st-pos', pct.toFixed(4));
+    var label=tracker.querySelector('.st-pct'); if(label) label.textContent=Math.round(pct*100)+'%';
+    var thumb=tracker.querySelector('.st-thumb'); if(thumb) thumb.style.top=(104+(tracker.clientHeight-208)*pct)+'px';
+    var plane=tracker.querySelector('.st-plane'); if(plane) plane.style.transform='rotate('+(15+pct*60)+'deg)';
+  }
+  tracker.classList.add('is-ready'); update();
+  window.addEventListener('scroll', update, {passive:true}); window.addEventListener('resize', update);
+})();
+
+// Active-section TOC highlight.
+(function(){
+  var toc=document.getElementById('sectionToc'); if(!toc) return;
+  var links=[].slice.call(toc.querySelectorAll('a[data-section]'));
+  var sections=links.map(function(a){ return {link:a, el:document.getElementById(a.getAttribute('data-section'))}; }).filter(function(s){ return s.el; });
+  if(!sections.length) return;
+  function setActive(id){ links.forEach(function(a){ a.classList.toggle('is-active', a.getAttribute('data-section')===id); }); }
+  if('IntersectionObserver' in window){
+    var visible=new Map();
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting) visible.set(e.target.id,e.intersectionRatio); else visible.delete(e.target.id); });
+      var best=null,br=0; visible.forEach(function(r,id){ if(r>br){br=r;best=id;} }); if(best) setActive(best);
+    }, {rootMargin:'-30% 0px -50% 0px', threshold:[0,0.1,0.25,0.5,0.75,1]});
+    sections.forEach(function(s){ io.observe(s.el); });
+  }
+})();
+
+// Smooth-scroll TOC.
+(function(){
+  var nav=document.querySelector('.case-nav');
+  document.querySelectorAll('#sectionToc a[href^="#"]').forEach(function(a){
+    a.addEventListener('click', function(e){
+      var t=document.getElementById(a.getAttribute('href').slice(1)); if(!t) return; e.preventDefault();
+      var y=t.getBoundingClientRect().top + window.scrollY - ((nav?nav.offsetHeight:0)+12);
+      window.scrollTo({top:y, behavior:'smooth'});
+    });
+  });
+})();
+
+// Hi-fi demo videos: load the file directly first (works in a downloaded copy /
+// file:// / real host); fall back to a blob fetch only if that fails (preview).
+(function(){
+  var vids=document.querySelectorAll('video[data-mp4]'); if(!vids.length) return;
+  function wire(v){
+    var src=v.getAttribute('data-mp4'); if(!src) return;
+    var tried=false;
+    v.addEventListener('error', function(){
+      if(tried) return; tried=true;
+      var qs=window.location.search||'';
+      var url=src.indexOf('?')===-1?src+qs:src;
+      fetch(url).then(function(r){return r.blob();}).then(function(b){ v.src=URL.createObjectURL(b); v.load(); var p=v.play(); if(p&&p.catch) p.catch(function(){}); }).catch(function(){});
+    });
+    v.src=src; try{v.load();}catch(e){}
+    var p=v.play(); if(p&&p.catch) p.catch(function(){});
+  }
+  function load(){ vids.forEach(wire); }
+  if(document.readyState==='complete') load(); else window.addEventListener('load', load);
+})();
+
+// Count-up.
+(function(){
+  var els=document.querySelectorAll('.count-up'); if(!els.length||!('IntersectionObserver' in window)) return;
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function animate(el){
+    var target=parseFloat(el.getAttribute('data-target'))||0;
+    if(reduce){ el.textContent=target; return; }
+    var dur=1300, t0=performance.now();
+    function step(now){ var p=Math.min(1,(now-t0)/dur); var e=1-Math.pow(1-p,3); el.textContent=Math.round(target*e); if(p<1) requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  var seen=new WeakSet();
+  var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting && !seen.has(en.target)){ seen.add(en.target); animate(en.target); } }); }, {threshold:0.5});
+  els.forEach(function(el){ io.observe(el); });
+})();
+
+// Scroll reveal.
+(function(){
+  var els=document.querySelectorAll('.reveal'); if(!els.length||!('IntersectionObserver' in window)){ els.forEach(function(el){el.classList.add('in');}); return; }
+  var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); }, {threshold:0.15, rootMargin:'0px 0px -8% 0px'});
+  els.forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
