@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<script>
+// Preview sandbox shim: append the document auth token to relative img srcs.
+(function(){
+  var qs = window.location.search || '';
+  function activate(){
+    if (!qs) return;
+    document.querySelectorAll('img[src]').forEach(function(el){
+      var s = el.getAttribute('src');
+      if (!s || /^(https?:|data:|blob:)/.test(s) || s.indexOf('?') !== -1) return;
+      el.setAttribute('src', s + qs);
+    });
+  }
+  if (document.readyState === 'complete') activate(); else window.addEventListener('load', activate);
+})();
+</script>
+<title>Go Live Companion &middot; Sabrina May</title>
+<link rel="icon" href="../favicon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700&family=IBM+Plex+Mono:wght@400;500;600&family=Familjen+Grotesk:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0D2133; --blue:#176B9B; --cyan:#5CC8E8; --pale:#EEF7FA;
+  --white:#FFFFFF; --cool:#E9EEF1; --amber:#D99A2B; --ink:#172027;
+  --display:'Bricolage Grotesque',serif; --sans:'Familjen Grotesk',sans-serif; --mono:'IBM Plex Mono',monospace;
+  --wrap:1180px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--white);color:var(--ink);font-family:var(--sans);font-size:17px;line-height:1.62;-webkit-font-smoothing:antialiased}
+img,video{max-width:100%;display:block}
+a{color:var(--blue);text-decoration:none}
+a:hover{color:var(--navy)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 clamp(20px,5vw,64px)}
+.narrow{max-width:720px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.1;margin:0;letter-spacing:-0.015em}
+p{margin:0 0 1.05em;text-wrap:pretty}
+p:last-child{margin-bottom:0}
+.mono{font-family:var(--mono);font-size:11px;letter-spacing:0.2em;text-transform:uppercase}
+
+/* ===== floating glass nav ===== */
+.gnav{position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:60;display:flex;align-items:center;gap:6px;
+  padding:7px 10px;border-radius:999px;background:rgba(238,247,250,0.72);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);
+  border:1px solid rgba(13,33,51,0.10);box-shadow:0 10px 30px -14px rgba(13,33,51,0.35);max-width:calc(100vw - 24px)}
+.gnav .home{display:flex;align-items:center;gap:7px;padding:6px 12px;border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--navy);white-space:nowrap}
+.gnav .home:hover{background:rgba(23,107,155,0.10)}
+.gnav .home svg{width:13px;height:13px}
+.gnav .rule{width:1px;height:18px;background:rgba(13,33,51,0.14)}
+.gnav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.gnav-links::-webkit-scrollbar{display:none}
+.gnav-links a{padding:6px 11px;border-radius:999px;font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(13,33,51,0.62);white-space:nowrap;transition:color .2s ease,background .2s ease,font-weight .2s ease}
+.gnav-links a:hover{color:var(--navy);font-weight:600;background:rgba(92,200,232,0.18);box-shadow:0 0 14px -4px rgba(92,200,232,0.7)}
+.gnav-links a.on{color:var(--blue);font-weight:600;background:rgba(92,200,232,0.16)}
+@media (max-width:860px){.gnav .rule,.gnav-links{display:none}}
+
+/* ===== scroll tracker ===== */
+.tracker{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:55;display:flex;flex-direction:column;align-items:center;gap:12px}
+.tracker .ico{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:rgba(238,247,250,0.8);backdrop-filter:blur(12px);border:1px solid rgba(13,33,51,0.10);color:var(--blue)}
+.tracker .ico svg{width:19px;height:19px}
+.tracker .track{width:2px;height:170px;background:rgba(13,33,51,0.13);border-radius:2px;position:relative;overflow:hidden}
+.tracker .track i{position:absolute;left:0;top:0;width:100%;height:0%;background:linear-gradient(180deg,var(--cyan),var(--blue));border-radius:2px}
+.tracker .pct{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;color:rgba(13,33,51,0.55);font-variant-numeric:tabular-nums}
+.tracker .sec{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue);writing-mode:vertical-rl;max-height:130px;overflow:hidden}
+@media (max-width:1100px){.tracker{display:none}}
+
+/* ===== hero ===== */
+.hero{background:
+    radial-gradient(120% 90% at 88% -10%, rgba(92,200,232,0.30), transparent 60%),
+    radial-gradient(90% 70% at 4% 4%, rgba(23,107,155,0.20), transparent 62%),
+    linear-gradient(170deg,#0B1C2C,#0D2133 52%,#102A40);
+  color:#fff;padding:clamp(112px,13vw,168px) 0 clamp(50px,6vw,78px);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background-image:linear-gradient(rgba(255,255,255,0.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.045) 1px,transparent 1px);
+  background-size:46px 46px;background-position:center;mask-image:radial-gradient(80% 70% at 60% 30%,#000,transparent 78%)}
+.hero .wrap{position:relative;z-index:2}
+.h-eyebrow{display:flex;align-items:center;gap:11px;color:var(--cyan);margin-bottom:20px}
+.h-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(92,200,232,0.2)}
+.hero h1{font-size:clamp(40px,6.6vw,80px);letter-spacing:-0.03em;max-width:15ch}
+.hero .lede{font-size:clamp(17px,1.7vw,21px);color:rgba(255,255,255,0.78);max-width:56ch;margin-top:20px}
+.h-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btn{display:inline-flex;align-items:center;gap:9px;padding:12px 20px;border-radius:999px;font-family:var(--mono);font-size:10.5px;letter-spacing:0.16em;text-transform:uppercase;transition:transform .18s ease,background .18s ease,box-shadow .18s ease}
+.btn svg{width:14px;height:14px}
+.btn-fill{background:var(--cyan);color:#08202F;font-weight:600}
+.btn-fill:hover{background:#7ad6f2;color:#08202F;transform:translateY(-2px);box-shadow:0 14px 28px -14px rgba(92,200,232,0.8)}
+.btn-ghost{border:1px solid rgba(255,255,255,0.28);color:#fff}
+.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);transform:translateY(-2px)}
+
+/* specs */
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;margin-top:clamp(40px,5vw,64px);
+  background:rgba(255,255,255,0.13);border:1px solid rgba(255,255,255,0.13);border-radius:6px;overflow:hidden}
+.specs div{background:rgba(9,26,41,0.55);backdrop-filter:blur(6px);padding:16px 18px}
+.specs dt{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:7px}
+.specs dd{margin:0;font-size:14px;line-height:1.45;color:rgba(255,255,255,0.9)}
+
+/* ===== sections ===== */
+section{padding:clamp(64px,8vw,116px) 0;position:relative}
+.s-pale{background:var(--pale)}
+.s-cool{background:var(--cool)}
+.s-dark{background:linear-gradient(165deg,#0B1C2C,#12293D);color:#fff}
+.s-dark h2,.s-dark h3{color:#fff}
+.s-dark .s-num{color:rgba(92,200,232,0.5)}
+.s-dark .s-lab{color:var(--cyan)}
+.s-head{display:flex;gap:clamp(14px,2.4vw,30px);align-items:baseline;margin-bottom:clamp(24px,3vw,40px)}
+.s-num{font-family:var(--mono);font-size:clamp(28px,3.6vw,46px);letter-spacing:-0.02em;color:rgba(13,33,51,0.16);line-height:1;flex:0 0 auto}
+.s-lab{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:12px}
+.s-head h2{font-size:clamp(26px,3.5vw,44px);max-width:22ch}
+.s-head h2.wide{max-width:32ch}
+
+/* two col */
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(22px,3.4vw,52px)}
+.two.lean{grid-template-columns:minmax(0,5fr) minmax(0,7fr)}
+.two.lean-r{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.two.mid{align-items:center}
+@media (max-width:820px){.two,.two.lean,.two.lean-r{grid-template-columns:1fr}}
+
+/* artifact figure */
+.art{margin:0;position:relative;padding-top:13px}
+.art .shot{border:1px solid rgba(13,33,51,0.14);border-radius:4px;overflow:hidden;background:#fff;box-shadow:0 24px 50px -34px rgba(13,33,51,0.45)}
+.art .bar{display:flex;align-items:center;gap:8px;padding:8px 12px;min-height:31px;background:#F5F8FA;border-bottom:1px solid rgba(13,33,51,0.1)}
+.art .bar .dots{display:flex;gap:5px}
+.art .bar .dots i{width:8px;height:8px;border-radius:50%;background:rgba(13,33,51,0.16)}
+.art .bar span{font-family:var(--mono);font-size:9.5px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(13,33,51,0.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.art figcaption{margin-top:11px;font-family:var(--mono);font-size:10px;letter-spacing:0.11em;text-transform:uppercase;color:rgba(13,33,51,0.5);line-height:1.6}
+.tag-art{position:absolute;top:0;left:14px;z-index:3;padding:4px 10px;border-radius:3px;background:var(--navy);color:var(--cyan);font-family:var(--mono);font-size:9px;letter-spacing:0.18em;text-transform:uppercase}
+
+/* chips / lists */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:0;padding:0;list-style:none}
+.chips li{padding:6px 11px;border-radius:3px;border:1px solid rgba(13,33,51,0.16);background:rgba(255,255,255,0.7);font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(13,33,51,0.72)}
+.s-dark .chips li{border-color:rgba(255,255,255,0.2);background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.82)}
+
+/* flow chain */
+.chain{display:flex;flex-wrap:wrap;align-items:stretch;gap:7px;margin:0;padding:0;list-style:none;counter-reset:c}
+.chain li{position:relative;flex:1 1 118px;min-width:0;padding:13px 12px;border-radius:4px;background:#fff;border:1px solid rgba(13,33,51,0.13)}
+.chain li b{display:block;font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.chain li span{font-size:13.5px;line-height:1.35;color:rgba(23,32,39,0.82);display:block}
+.chain li.hot{background:linear-gradient(175deg,#0D2133,#153450);border-color:transparent}
+.chain li.hot b{color:var(--cyan)}
+.chain li.hot span{color:rgba(255,255,255,0.9)}
+.chain li.soft{background:rgba(92,200,232,0.12);border-color:rgba(23,107,155,0.24)}
+.s-dark .chain li{background:rgba(255,255,255,0.055);border-color:rgba(255,255,255,0.14)}
+.s-dark .chain li span{color:rgba(255,255,255,0.86)}
+
+/* four themes */
+.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:14px}
+.theme{padding:20px;border-radius:5px;background:#fff;border:1px solid rgba(13,33,51,0.12);border-top:3px solid var(--blue)}
+.theme h4{font-size:16px;margin-bottom:4px}
+.theme .n{font-family:var(--mono);font-size:9.5px;letter-spacing:0.2em;color:rgba(13,33,51,0.4);display:block;margin-bottom:9px}
+.theme ul{margin:11px 0 0;padding:0;list-style:none}
+.theme li{font-size:13.5px;line-height:1.5;padding-left:13px;position:relative;color:rgba(23,32,39,0.76)}
+.theme li::before{content:"";position:absolute;left:0;top:8px;width:5px;height:1px;background:var(--blue)}
+
+/* pull quote */
+.pull{margin:0;padding:clamp(28px,4vw,48px) 0}
+.pull p{font-family:var(--display);font-size:clamp(24px,3.6vw,42px);font-weight:600;line-height:1.16;letter-spacing:-0.025em;max-width:23ch}
+.pull .attr{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--cyan);margin-top:18px}
+
+/* IA tree */
+.ia{background:#0B1C2C;border-radius:6px;padding:clamp(20px,3vw,34px);overflow-x:auto;border:1px solid rgba(92,200,232,0.16)}
+.ia pre{margin:0;font-family:var(--mono);font-size:12px;line-height:1.85;color:rgba(255,255,255,0.82);white-space:pre}
+.ia pre b{color:var(--cyan);font-weight:500}
+.ia pre em{color:var(--amber);font-style:normal}
+
+/* state model */
+.states{display:flex;flex-wrap:wrap;gap:0;margin:0;padding:0;list-style:none;align-items:center}
+.states li{display:flex;align-items:center;gap:0;font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase}
+.states li>span{padding:9px 13px;border:1px solid rgba(13,33,51,0.18);border-radius:3px;background:#fff;color:rgba(13,33,51,0.78)}
+.states li>i{width:20px;height:1px;background:rgba(13,33,51,0.28);position:relative;flex:0 0 auto}
+.states li>i::after{content:"";position:absolute;right:0;top:-2.5px;border-left:5px solid rgba(13,33,51,0.4);border-top:3px solid transparent;border-bottom:3px solid transparent}
+.states li.pend>span{background:rgba(217,154,43,0.14);border-color:rgba(217,154,43,0.5);color:#8A5E11}
+.states li.done>span{background:rgba(23,107,155,0.12);border-color:rgba(23,107,155,0.42);color:var(--blue)}
+.states li.bad>span{background:rgba(13,33,51,0.05);border-color:rgba(13,33,51,0.2);color:rgba(13,33,51,0.5)}
+.s-dark .states li>span{background:rgba(255,255,255,0.06);border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.84)}
+.s-dark .states li>i{background:rgba(255,255,255,0.3)}
+.s-dark .states li>i::after{border-left-color:rgba(255,255,255,0.45)}
+
+/* record compare */
+.rec{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
+.rec div{padding:18px;border-radius:5px;background:#fff;border:1px solid rgba(13,33,51,0.13)}
+.rec .k{font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:rgba(13,33,51,0.45);margin-bottom:8px}
+.rec .v{font-family:var(--mono);font-size:16px;color:var(--navy);letter-spacing:-0.01em;line-height:1.4}
+.rec .sub{font-size:13px;color:rgba(23,32,39,0.6);margin-top:5px}
+.rec .obs{border-color:rgba(217,154,43,0.5);background:rgba(217,154,43,0.07)}
+.rec .obs .v{color:#8A5E11}
+
+/* ai vs human */
+.split2{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px}
+.split2 article{padding:24px;border-radius:5px}
+.split2 .ai{background:rgba(92,200,232,0.13);border:1px solid rgba(23,107,155,0.24)}
+.split2 .hu{background:#fff;border:1px solid rgba(13,33,51,0.14)}
+.split2 h4{font-family:var(--mono);font-size:10px;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;margin-bottom:14px;color:var(--blue)}
+.split2 .hu h4{color:var(--navy)}
+.split2 ul{margin:0;padding:0;list-style:none}
+.split2 li{font-size:14.5px;line-height:1.55;padding:7px 0 7px 15px;position:relative;border-top:1px solid rgba(13,33,51,0.08)}
+.split2 li:first-child{border-top:0}
+.split2 li::before{content:"";position:absolute;left:0;top:15px;width:6px;height:6px;border-radius:50%;background:var(--blue);opacity:.5}
+
+/* decisions */
+.dec{border-top:1px solid rgba(13,33,51,0.14);padding-top:26px;margin-top:34px}
+.dec:first-of-type{margin-top:0}
+.dec .dn{font-family:var(--mono);font-size:clamp(34px,4.6vw,60px);line-height:1;color:rgba(23,107,155,0.22);letter-spacing:-0.03em;margin-bottom:14px}
+.dec h3{font-size:clamp(21px,2.5vw,31px);max-width:26ch;margin-bottom:14px}
+.dec .why{font-family:var(--mono);font-size:9.5px;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.s-dark .dec{border-color:rgba(255,255,255,0.16)}
+.s-dark .dec .dn{color:rgba(92,200,232,0.34)}
+.s-dark .dec .why{color:var(--cyan)}
+
+/* kept / cut */
+.kc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
+.kc article{padding:22px;border-radius:5px;background:#fff;border:1px solid rgba(13,33,51,0.13)}
+.kc .cut{background:rgba(13,33,51,0.035)}
+.kc h4{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;color:var(--blue);margin-bottom:14px}
+.kc .cut h4{color:rgba(13,33,51,0.45)}
+.kc ul{margin:0;padding:0;list-style:none}
+.kc li{font-size:14.5px;line-height:1.5;padding:6px 0;border-top:1px solid rgba(13,33,51,0.07)}
+.kc li:first-child{border-top:0}
+.kc .cut li{color:rgba(23,32,39,0.5);text-decoration:line-through;text-decoration-color:rgba(13,33,51,0.25)}
+
+/* principles */
+.prin{display:grid;grid-template-columns:repeat(auto-fit,minmax(255px,1fr));gap:1px;background:rgba(255,255,255,0.14);border:1px solid rgba(255,255,255,0.14);border-radius:6px;overflow:hidden}
+.prin article{background:rgba(11,28,44,0.72);padding:22px}
+.prin .pn{font-family:var(--mono);font-size:9.5px;letter-spacing:0.2em;color:var(--cyan);margin-bottom:9px}
+.prin h4{font-size:17px;margin-bottom:8px;letter-spacing:-0.01em}
+.prin p{font-size:14px;line-height:1.55;color:rgba(255,255,255,0.68);margin:0}
+
+/* numbered list */
+.ol{margin:0;padding:0;list-style:none;counter-reset:q}
+.ol li{counter-increment:q;position:relative;padding:14px 0 14px 46px;border-top:1px solid rgba(13,33,51,0.11);font-size:16px;line-height:1.55}
+.ol li:first-child{border-top:0}
+.ol li::before{content:counter(q,decimal-leading-zero);position:absolute;left:0;top:15px;font-family:var(--mono);font-size:11px;letter-spacing:0.1em;color:var(--blue)}
+
+/* footer */
+.foot{background:var(--navy);color:rgba(255,255,255,0.6);padding:40px 0;font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase}
+.foot .wrap{display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center}
+.foot a{color:var(--cyan)}
+.next{display:flex;align-items:center;gap:9px}
+
+.rv{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav class="gnav" aria-label="Case navigation">
+  <a class="home" href="../index.html#work">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+    Portfolio
+  </a>
+  <span class="rule"></span>
+  <div class="gnav-links">
+    <a href="#context">Context</a>
+    <a href="#pain">Pain points</a>
+    <a href="#insight">Insight</a>
+    <a href="#scope">Scope</a>
+    <a href="#arch">Architecture</a>
+    <a href="#lofi">Low fi</a>
+    <a href="#flow">Interaction</a>
+    <a href="#decisions">Decisions</a>
+    <a href="#build">Build</a>
+    <a href="#next">Next</a>
+  </div>
+</nav>
+
+<div class="tracker" aria-hidden="true">
+  <div class="ico">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 21V8.5L12 4l8 4.5V21"/><path d="M4 21h16"/><path d="M10 21v-5h4v5"/><path d="M12 8.5v4"/><path d="M10 10.5h4"/>
+    </svg>
+  </div>
+  <div class="track"><i id="tp"></i></div>
+  <div class="pct" id="tpct">0%</div>
+  <div class="sec" id="tsec">Context</div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="h-eyebrow mono"><span class="dot"></span>Design Intervention 01 &middot; Enterprise UX</div>
+    <h1>Go Live Companion</h1>
+    <p class="lede">An operational companion that carries a project manager's context through a hospital software go live, from onsite orientation to a verified correction.</p>
+    <div class="h-actions">
+      <a class="btn btn-fill" href="https://maybesab.github.io/Go-Live-/" target="_blank" rel="noopener">Open the working build
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+      <a class="btn btn-ghost" href="https://www.figma.com/board/IAUcR1b5uCFWMPvw8deSbZ/Untitled?node-id=0-1" target="_blank" rel="noopener">See the FigJam
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+    <dl class="specs">
+      <div><dt>Role</dt><dd>Product Designer</dd></div>
+      <div><dt>Type</dt><dd>Design intervention</dd></div>
+      <div><dt>Domain</dt><dd>Healthcare operations</dd></div>
+      <div><dt>Scope</dt><dd>Workflow mapping, IA, interaction design, working build</dd></div>
+      <div><dt>Tools</dt><dd>FigJam, Figma, Claude</dd></div>
+      <div><dt>Data</dt><dd>Synthetic. No client data.</dd></div>
+    </dl>
+  </div>
+</header>
+
+<section id="context">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">01</span>
+      <div><span class="s-lab">Where this came from</span><h2>I kept leaving the task in front of me to find the context somewhere else.</h2></div>
+    </div>
+    <div class="two lean rv">
+      <div class="narrow">
+        <p>I spent a stretch of my career as an implementation project manager supporting hospital software go lives for a healthcare software vendor. A go live is a few days of very high context work: you are onsite in a building you may not know, supporting clinical staff on software that was configured months earlier by people you may never have met.</p>
+        <p>To do the job well I needed to know where I was assigned, which floor and unit to walk to, who my coworkers were and where they had set up, who the hospital contacts were, what had actually been built, which devices were in the room, who owned an open issue, and whether a fix had been verified.</p>
+        <p>None of that information was missing. It was just scattered across email, travel systems, staffing lists, project systems, hospital floor plans, client device records, secure messaging, ticketing, and other people's memory.</p>
+      </div>
+      <div>
+        <ul class="chips rv" aria-label="Where context lived">
+          <li>Email threads</li><li>Travel system</li><li>Staffing list</li><li>Project system</li>
+          <li>Hospital floor plans</li><li>Client device records</li><li>Secure messaging</li><li>Ticketing</li>
+          <li>Hospital IT</li><li>Technical support</li><li>Coworkers</li>
+        </ul>
+        <p style="margin-top:22px;font-size:15px;color:rgba(23,32,39,0.62)">Eleven places I might have to visit to finish one task that was already in front of me.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="pain" class="s-pale">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">02</span>
+      <div><span class="s-lab">Process evidence</span><h2 class="wide">The pain points looked unrelated until I grouped them.</h2></div>
+    </div>
+    <div class="two lean-r mid">
+      <figure class="art rv">
+        <span class="tag-art">FigJam &middot; raw notes</span>
+        <div class="shot"><div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>Walking through user pain points chronologically</span></div>
+          <img src="../img/golive/painpoints.png" alt="FigJam board of red and yellow sticky notes recording go live frustrations in chronological order, from travel logistics through onsite support" loading="lazy" />
+        </div>
+        <figcaption>I wrote these from memory before analysing anything, in the order they happen on a trip.</figcaption>
+      </figure>
+      <div class="narrow rv">
+        <p>I started by writing down every frustration I could remember, in the order it happens on a trip rather than sorted by severity. Rechecking flights at the last minute. Scrolling email to be sure I had not missed go live information. Looking up which coworkers were assigned with me. Arriving at a hospital with no sense of the unit, the floor plan, or the head nurse. Digging through my camera roll for reimbursement photos. Checking build status by hand. Waiting on IT. Messaging around to find out where someone was and who owned an issue.</p>
+        <p>Kept in that raw form, the list reads like a complaint. Grouped, it turned into a diagnosis.</p>
+      </div>
+    </div>
+    <div class="rv" style="margin-top:clamp(34px,4vw,58px)">
+      <figure class="art">
+        <span class="tag-art">FigJam &middot; affinity map</span>
+        <div class="shot"><div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>Affinity mapping theme discovery</span></div>
+          <img src="../img/golive/affinity.png" alt="Affinity map grouping the pain points into four themes: logistics and admin, orientation and wayfinding, people and communication, operational context and knowledge, plus a moment to design column" loading="lazy" />
+        </div>
+        <figcaption>Four themes, plus a fifth column I used to mark the moment worth designing for.</figcaption>
+      </figure>
+    </div>
+    <div class="themes rv" style="margin-top:26px">
+      <article class="theme"><span class="n">01</span><h4>Logistics &amp; admin</h4><ul><li>Travel and flights</li><li>Trip submissions</li><li>Reimbursement</li></ul></article>
+      <article class="theme"><span class="n">02</span><h4>Orientation &amp; wayfinding</h4><ul><li>Arriving onsite</li><li>Finding the right unit</li><li>Reading the building</li></ul></article>
+      <article class="theme"><span class="n">03</span><h4>People &amp; communication</h4><ul><li>Coworkers and roles</li><li>Who is where</li><li>Secure messaging</li><li>Hospital IT</li></ul></article>
+      <article class="theme"><span class="n">04</span><h4>Operational context</h4><ul><li>Go live information</li><li>Build status</li><li>Device records</li><li>Permissions</li><li>Similar prior issues</li></ul></article>
+    </div>
+    <p class="rv narrow" style="margin-top:22px;font-size:15px;color:rgba(13,33,51,0.6)">These were analytical categories, not the product's navigation. I want to be clear about that, because the obvious move would have been to ship four tabs named after them.</p>
+  </div>
+</section>
+
+<section id="insight" class="s-dark">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">03</span>
+      <div><span class="s-lab">The root problem</span><h2>Four different themes. One repeated behaviour underneath them.</h2></div>
+    </div>
+    <div class="two mid">
+      <figure class="pull rv">
+        <p>The context needed to finish the current task does not travel with the work.</p>
+        <div class="attr">Context fragmentation</div>
+      </figure>
+      <div class="rv">
+        <ul class="chain" style="margin-bottom:20px">
+          <li><b>Step 01</b><span>Leave the current task</span></li>
+          <li><b>Step 02</b><span>Find another system or another person</span></li>
+          <li><b>Step 03</b><span>Reconstruct the missing context</span></li>
+          <li><b>Step 04</b><span>Return and resume</span></li>
+        </ul>
+        <p style="color:rgba(255,255,255,0.72);font-size:15.5px">It would be easy to call this "too many apps," but consolidating tools would not fix it. The problem is not the number of systems. It is that the context sits in the systems rather than travelling with the piece of work, so the PM becomes the integration layer.</p>
+        <p style="color:rgba(255,255,255,0.72);font-size:15.5px">That gave me the thesis: build one operational companion that carries the relevant context through the go live workflow, and surface it at the moment it becomes useful. Not a dashboard that shows everything at once.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="scope">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">04</span>
+      <div><span class="s-lab">Scope and journey</span><h2 class="wide">I narrowed to the part of a go live where context costs the most.</h2></div>
+    </div>
+    <div class="two lean rv">
+      <div class="narrow">
+        <p><b>Primary user:</b> an implementation project manager supporting a hospital software go live onsite.</p>
+        <p><b>Scope:</b> final preparation before arrival through active onsite support. I deliberately did not redesign the whole implementation lifecycle. This window is where fragmented information turns into immediate operational friction, because the PM is standing in a room with a clinician waiting.</p>
+        <p>Then I stopped asking what pages the app needed and started asking what context has to follow the PM through each stage.</p>
+      </div>
+      <div>
+        <ul class="chain" style="flex-direction:column">
+          <li class="soft"><b>Before arrival</b><span>Assignment and logistics</span></li>
+          <li class="soft"><b>Once onsite</b><span>Orientation and people</span></li>
+          <li class="soft"><b>During support</b><span>Technical context, issue coordination, ownership</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="rv" style="margin-top:clamp(32px,4vw,52px)">
+      <span class="s-lab">The golden journey</span>
+      <ul class="chain">
+        <li><b>01</b><span>Prepare</span></li>
+        <li><b>02</b><span>Arrive</span></li>
+        <li><b>03</b><span>Orient</span></li>
+        <li><b>04</b><span>Support</span></li>
+        <li class="hot"><b>05</b><span>Encounter issue</span></li>
+        <li class="hot"><b>06</b><span>Investigate</span></li>
+        <li class="hot"><b>07</b><span>Coordinate</span></li>
+        <li><b>08</b><span>Resolve</span></li>
+      </ul>
+      <p class="narrow" style="margin-top:16px;font-size:15px;color:rgba(23,32,39,0.6)">The three highlighted stages are where the product earns its place, so they became the hero interaction.</p>
+    </div>
+    <div class="rv" style="margin-top:clamp(32px,4vw,52px)">
+      <span class="s-lab">What I cut</span>
+      <div class="kc" style="margin-top:14px">
+        <article><h4>Kept</h4><ul>
+          <li>Today / assignment brief</li>
+          <li>Onsite floor and unit map</li>
+          <li>Staff and role context</li>
+          <li>Create an issue from location and device context</li>
+          <li>Permitted project and device information</li>
+          <li>Similar issue retrieval</li>
+          <li>Routing, ownership, status</li>
+          <li>Amendments</li>
+        </ul></article>
+        <article class="cut"><h4>Cut on purpose</h4><ul>
+          <li>Full reimbursement handling</li>
+          <li>Full travel management</li>
+          <li>Generic dashboard metrics</li>
+          <li>Rebuilding secure messaging from scratch</li>
+        </ul></article>
+      </div>
+      <p class="narrow" style="margin-top:18px;font-size:15px;color:rgba(23,32,39,0.62)">Ideation included all of it: travel, client briefing, AI questions about assignment, floor plans, staff positions, naming conventions, build status, tickets, amendments, unit chats, overall progress, similar issue retrieval, protected record validation. Reimbursement and travel are real frustrations, but they are administrative problems that already have owners elsewhere. Cutting them was a product decision, not an oversight.</p>
+    </div>
+  </div>
+</section>
+
+<section id="arch" class="s-cool">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">05</span>
+      <div><span class="s-lab">Information architecture</span><h2>I designed the information to travel with the PM.</h2></div>
+    </div>
+    <div class="ia rv">
+<pre><b>GO LIVE PROJECT</b>
+│
+├── <b>TODAY / BRIEF</b>      assignment · shift · current unit · team · priorities · active issues
+│
+├── <b>MAP</b>                hospital · floor · unit · room · permitted device objects
+│
+├── <b>PEOPLE</b>             implementation staff · hospital staff · roles · assignments · availability
+│
+├── <b>ISSUES</b>             originating location · related device · workflow · owner
+│                      status · next action · related communication
+│
+├── <b>AMENDMENTS</b>         object changed · previous value · observed value
+│                      author · reviewer · status · audit history
+│
+├── <b>CHATS</b>              linked to issue / device / unit / amendment
+│
+├── <b>PROJECT CONTEXT</b>    build status · client brief · contacts · known issues
+│
+└── <b>AI CONTEXT LAYER</b>   retrieve permitted information · identify similar issues
+                       prefill known context · recommend likely ownership
+
+   cross cutting   <em>PERMISSIONS   PROVENANCE   OWNERSHIP   AUDIT HISTORY   CONTEXT INHERITANCE</em></pre>
+    </div>
+    <div class="two lean rv" style="margin-top:clamp(28px,3.4vw,44px)">
+      <div class="narrow">
+        <p>The important part of this architecture is not the list of sections. It is that map, issue, amendment, person, and chat are not separate silos. They reference the same underlying objects.</p>
+        <p>So one workstation can exist on the map, become the subject of a discrepancy, be referenced by an amendment, be assigned to Hospital IT, and appear inside the contextual chat, without the PM retyping any of it.</p>
+      </div>
+      <div>
+        <div class="rec">
+          <div><div class="k">One object</div><div class="v">WS-ER-14</div><div class="sub">Workstation, Triage / Fast Track</div></div>
+        </div>
+        <ul class="chain" style="margin-top:12px">
+          <li><b>On the map</b><span>A device in a room</span></li>
+          <li><b>In an issue</b><span>The subject of a discrepancy</span></li>
+          <li><b>In an amendment</b><span>The object being changed</span></li>
+          <li><b>In a chat</b><span>Context already attached</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="lofi">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">06</span>
+      <div><span class="s-lab">Low fi sprint</span><h2 class="wide">Before I coded anything, I worked out what happened after every click.</h2></div>
+    </div>
+    <p class="narrow rv" style="margin-bottom:26px">The point of the low fi pass was to prove behaviour before visual polish: what content carries forward, what changes state, and where a human has to intervene. It covered the product shell, whole building wayfinding, the hero discrepancy flow in twelve steps, and a secondary AI naming check.</p>
+    <figure class="art rv">
+      <span class="tag-art">FigJam &middot; storyboard</span>
+      <div class="shot"><div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>Step 7 &middot; Low fi interaction storyboard</span></div>
+        <img src="../img/golive/storyboard.png" alt="Low fidelity interaction storyboard covering the product shell, whole building wayfinding, the twelve step onsite discrepancy and amendment flow, and a secondary AI naming check with secure handoff" loading="lazy" />
+      </div>
+      <figcaption>Every panel names the content that carries forward and the state that changes.</figcaption>
+    </figure>
+    <div class="two rv" style="margin-top:clamp(30px,3.6vw,48px)">
+      <figure class="art">
+        <span class="tag-art">Cleaned draft</span>
+        <div class="shot"><div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>Wayfinding + hero flow, tightened</span></div>
+          <img src="../img/golive/lofi-clean.png" alt="Cleaned low fidelity wireframes showing the whole building wayfinding map for Miami General Hospital and the location discrepancy and amendment flow" loading="lazy" />
+        </div>
+        <figcaption>The cleaned pass, once the behaviour held up.</figcaption>
+      </figure>
+      <div>
+        <span class="s-lab">What the wireframes had to prove</span>
+        <ol class="ol" style="margin-top:12px">
+          <li><b>Context carries forward.</b> The PM never retypes hospital, unit, room, device, issue, or owner when moving between map, report, amendment, and chat.</li>
+          <li><b>The human flags physical reality.</b> The system cannot know a workstation was physically moved. The PM sees the mismatch onsite.</li>
+          <li><b>AI validates with limited access.</b> A narrow question can be checked against protected records without handing the PM the client's backend.</li>
+          <li><b>Humans confirm consequential changes.</b> AI does not silently alter a hospital record.</li>
+          <li><b>Amendments are auditable.</b> Original and proposed states both stay visible.</li>
+          <li><b>Ownership is explicit.</b> The interface always answers who owns the next action.</li>
+          <li><b>Related objects behave like one system.</b> Map, device, issue, amendment, person, and chat share context.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="flow" class="s-pale">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">07</span>
+      <div><span class="s-lab">Hero interaction</span><h2>The floor plan became the starting point for resolving the issue.</h2></div>
+    </div>
+    <div class="two lean rv">
+      <div class="narrow">
+        <p>Here is the scenario the product is built around, using synthetic data. At Miami General Hospital, outpatient emergency clinic, the PM is assigned to Triage / Fast Track on the ground floor.</p>
+        <p>The system says workstation WS-ER-14 lives in ER-108, Exam Room 3. Standing in the unit, the PM can see it installed in ER-110, Triage Bay 2. Somebody moved it and nobody updated the record.</p>
+        <p>The PM taps the device on the unit map and reports a location discrepancy. Because the report starts from the map, the hospital, unit, room, and device are already attached.</p>
+      </div>
+      <div>
+        <div class="rec">
+          <div><div class="k">System record</div><div class="v">ER-108</div><div class="sub">Exam Room 3</div></div>
+          <div class="obs"><div class="k">Observed onsite</div><div class="v">ER-110</div><div class="sub">Triage Bay 2</div></div>
+        </div>
+        <div style="margin-top:16px;padding:20px;border-radius:5px;background:#fff;border:1px solid rgba(13,33,51,0.13)">
+          <div class="k" style="font-family:var(--mono);font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--blue);margin-bottom:10px">AI validation response</div>
+          <p style="font-size:15px;margin-bottom:0.7em">These locations differ. I can create an amendment for Hospital IT to verify.</p>
+          <p style="font-size:13.5px;color:rgba(23,32,39,0.58);margin:0">It does not say the database is wrong, and it does not move the device. The PM chooses to create the amendment.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rv" style="margin-top:clamp(34px,4vw,54px)">
+      <span class="s-lab">The amendment record</span>
+      <div class="rec" style="margin-top:14px">
+        <div><div class="k">Object</div><div class="v">WS-ER-14</div><div class="sub">Device location</div></div>
+        <div><div class="k">Original</div><div class="v">ER-108</div><div class="sub">Exam Room 3</div></div>
+        <div class="obs"><div class="k">Proposed</div><div class="v">ER-110</div><div class="sub">Triage Bay 2</div></div>
+        <div><div class="k">Assigned to</div><div class="v" style="font-size:14px">Hospital IT</div><div class="sub">Submitted by Sabrina May</div></div>
+      </div>
+      <p class="narrow" style="margin-top:18px;font-size:15px;color:rgba(13,33,51,0.66)">After the PM confirms, the operational map can show WS-ER-14 in ER-110, but it is clearly marked <b>amended, awaiting verification</b>. The original value stays in the history. The PM has not overwritten the hospital's canonical record, and nobody downstream has to guess whether the change was authoritative.</p>
+    </div>
+    <div class="rv" style="margin-top:clamp(30px,3.6vw,46px)">
+      <span class="s-lab">State model</span>
+      <ul class="states" style="margin-top:14px">
+        <li><span>System record</span><i></i></li>
+        <li><span>Observation differs</span><i></i></li>
+        <li><span>Discrepancy reported</span><i></i></li>
+        <li><span>AI validation</span><i></i></li>
+        <li><span>Human confirmation</span><i></i></li>
+        <li><span>Amendment submitted</span><i></i></li>
+        <li class="pend"><span>Awaiting Hospital IT</span><i></i></li>
+        <li class="done"><span>Verified</span><i></i></li>
+        <li class="done"><span>Applied</span></li>
+      </ul>
+      <ul class="states" style="margin-top:10px"><li class="bad"><span>Terminal alternative &middot; Rejected</span></li></ul>
+      <p class="narrow" style="margin-top:16px;font-size:15px;color:rgba(13,33,51,0.6)">The product models the uncertainty instead of hiding it. Amber means somebody still has to look.</p>
+    </div>
+    <div class="rv" style="margin-top:clamp(30px,3.6vw,46px)">
+      <span class="s-lab">Ownership never goes unnamed</span>
+      <ul class="states" style="margin-top:14px">
+        <li><span>You are investigating</span><i></i></li>
+        <li><span>Report sent</span><i></i></li>
+        <li class="pend"><span>Waiting on Hospital IT</span><i></i></li>
+        <li class="pend"><span>Hospital IT verifying</span><i></i></li>
+        <li class="done"><span>Resolved</span></li>
+      </ul>
+    </div>
+    <div class="rv" style="margin-top:clamp(34px,4vw,54px)">
+      <span class="s-lab">Secondary flow &middot; asking a narrow question of protected data</span>
+      <div class="two lean" style="margin-top:16px">
+        <div class="narrow">
+          <p>The PM asks: is LABPRNTR402 the correct printer name for ER-110? Naming conventions matter during a go live because a mislabelled device routes print jobs to the wrong floor.</p>
+          <p>AI checks the protected end user device context, finds the expected convention and the registered name, and offers to create a prefilled discrepancy report. The PM reviews it and sends it to Hospital IT. Status becomes waiting on Hospital IT, and a secure chat opens with the context already attached.</p>
+        </div>
+        <div class="rec">
+          <div><div class="k">Convention</div><div class="v">P-ER-##</div></div>
+          <div><div class="k">Registered</div><div class="v">P-ER-04</div></div>
+          <div class="obs"><div class="k">Observed</div><div class="v" style="font-size:14px">LABPRNTR402</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="decisions" class="s-dark">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">08</span>
+      <div><span class="s-lab">Three design decisions</span><h2>These three calls matter more than showing every screen.</h2></div>
+    </div>
+    <div class="dec rv">
+      <div class="dn">01</div>
+      <div class="two lean">
+        <h3>Physical reality needs a human input.</h3>
+        <div class="narrow">
+          <div class="why">Why it exists</div>
+          <p style="color:rgba(255,255,255,0.74)">No amount of retrieval tells the system that somebody wheeled a workstation from Exam Room 3 into Triage Bay 2. There is no sensor and no event. The only source of truth is a person standing in the room.</p>
+          <p style="color:rgba(255,255,255,0.74)">So the map is not a read-only diagram. Every device on it is a reporting surface, and reporting starts from the object rather than from a blank form.</p>
+        </div>
+      </div>
+    </div>
+    <div class="dec rv">
+      <div class="dn">02</div>
+      <div class="two lean">
+        <h3>Permission limits should change the answer, not break the workflow.</h3>
+        <div class="narrow">
+          <div class="why">Why it exists</div>
+          <p style="color:rgba(255,255,255,0.74)">During real go lives I often needed device context I had no clearance to browse. The usual outcome is a dead end and a message to somebody with access.</p>
+          <p style="color:rgba(255,255,255,0.74)">The AI context layer answers a narrow question against permitted records without granting general access. The PM learns that the registered name is P-ER-04 without being handed the client's device inventory. A permission boundary shapes the response instead of stopping the work.</p>
+        </div>
+      </div>
+    </div>
+    <div class="dec rv">
+      <div class="dn">03</div>
+      <div class="two lean">
+        <h3>A correction needs an owner, a history, and a verification state.</h3>
+        <div class="narrow">
+          <div class="why">Why it exists</div>
+          <p style="color:rgba(255,255,255,0.74)">The tempting version writes ER-110 straight into the record. That is faster and it destroys the audit trail, and in a hospital the audit trail is the point.</p>
+          <p style="color:rgba(255,255,255,0.74)">So the amendment becomes pending. Original and proposed values both persist, the reviewer is named, and the map carries an awaiting verification marker until Hospital IT confirms. The correction is useful immediately and authoritative only after review.</p>
+        </div>
+      </div>
+    </div>
+    <div class="rv" style="margin-top:clamp(40px,4.6vw,64px)">
+      <span class="s-lab">Where the line sits</span>
+      <div class="split2" style="margin-top:16px">
+        <article class="ai"><h4>AI does</h4><ul>
+          <li>Retrieve relevant context</li><li>Connect permitted sources</li><li>Recognise similar prior issues</li>
+          <li>Prefill issue details</li><li>Suggest a likely owner</li><li>Explain the known record state</li>
+        </ul></article>
+        <article class="hu"><h4>The human does</h4><ul>
+          <li>Observe physical reality</li><li>Verify the context</li><li>Edit or reject suggestions</li>
+          <li>Choose to escalate</li><li>Approve the amendment</li><li>Resolve and close</li>
+        </ul></article>
+      </div>
+      <p class="narrow" style="margin-top:18px;color:rgba(255,255,255,0.7);font-size:15.5px">AI reduces search and re-entry. Judgment on anything consequential stays with the person who is accountable for it.</p>
+    </div>
+  </div>
+</section>
+
+<section id="build">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">09</span>
+      <div><span class="s-lab">From board to build</span><h2>Then I turned the interaction into working software.</h2></div>
+    </div>
+    <div class="two lean rv">
+      <div class="narrow">
+        <p>The sequence mattered. The FigJam produced the problem, the affinity map produced the diagnosis, and the storyboard settled the behaviour. Only then did I use Claude to build it, which meant I was implementing decisions rather than discovering them in code.</p>
+        <p>The result is a clickable build of Miami General Hospital: assignment brief, whole building wayfinding, unit map, device objects, the discrepancy flow, the amendment log, and the contextual chat.</p>
+      </div>
+      <div>
+        <ul class="chain">
+          <li><b>Step 01</b><span>FigJam pain points</span></li>
+          <li><b>Step 02</b><span>Affinity mapping</span></li>
+          <li><b>Step 03</b><span>Low fi storyboard</span></li>
+          <li class="hot"><b>Step 04</b><span>Built with Claude</span></li>
+          <li class="hot"><b>Step 05</b><span>Working prototype</span></li>
+        </ul>
+        <a class="btn btn-fill" style="margin-top:20px;background:var(--navy);color:var(--cyan)" href="https://maybesab.github.io/Go-Live-/" target="_blank" rel="noopener">Open Miami General
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
+        </a>
+      </div>
+    </div>
+    <figure class="art rv" style="margin-top:clamp(30px,3.6vw,48px)">
+      <span class="tag-art">FigJam &middot; scoping steps</span>
+      <div class="shot"><div class="bar"><span class="dots"><i></i><i></i><i></i></span><span>Decision, user, journey, feature cuts, scenario, wireframe</span></div>
+        <img src="../img/golive/nextsteps.png" alt="Six scoping cards from the FigJam covering the product decision, primary user and scope, golden journey, core capabilities and feature cuts, hero scenario, and wireframe plan" loading="lazy" />
+      </div>
+      <figcaption>The six scoping decisions that sat between the affinity map and the wireframes.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="next" class="s-cool">
+  <div class="wrap">
+    <div class="s-head rv">
+      <span class="s-num">10</span>
+      <div><span class="s-lab">What I would test next</span><h2>This is a concept, so here is what I would put in front of PMs.</h2></div>
+    </div>
+    <div class="two lean rv">
+      <ol class="ol">
+        <li>Does starting an issue from the map actually remove the re-entry step, or do PMs still reach for the systems they already trust?</li>
+        <li>Can a PM tell the difference between an amended value awaiting verification and a confirmed record, at a glance, mid shift?</li>
+        <li>Does a narrow AI answer about protected data feel trustworthy enough to act on, or does the permission boundary read as evasive?</li>
+        <li>Does explicit ownership reduce the amount of messaging around to find out who has the next action?</li>
+      </ol>
+      <div class="narrow">
+        <p style="font-size:15px;color:rgba(13,33,51,0.66)">The part I am least sure about is the amendment. It is the right systems answer, but it asks a PM in a busy unit to accept that the fix is not finished. If that friction turns out to be unacceptable, the honest response is to redesign the verification handoff rather than quietly let the app overwrite the record.</p>
+        <p style="font-size:15px;color:rgba(13,33,51,0.66)">All hospital, device, and staff data here is synthetic. Nothing in this project uses real client information.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    <div>&copy; 2026 Sabrina May &middot; Design Intervention 01</div>
+    <a class="next" href="mpep.html">Next intervention &middot; MPEP Study Tool
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    </a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var rv=[].slice.call(document.querySelectorAll('.rv'));
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:0.05});
+    rv.forEach(function(el){io.observe(el)});
+  } else { rv.forEach(function(el){el.classList.add('in')}); }
+
+  var bar=document.getElementById('tp'), pct=document.getElementById('tpct'), secl=document.getElementById('tsec');
+  var links=[].slice.call(document.querySelectorAll('.gnav-links a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))}).filter(Boolean);
+  function tick(){
+    var h=document.documentElement.scrollHeight-window.innerHeight;
+    var p=h>0?Math.min(100,Math.max(0,Math.round(window.scrollY/h*100))):0;
+    if(bar) bar.style.height=p+'%';
+    if(pct) pct.textContent=p+'%';
+    var cur=null, mid=window.innerHeight*0.34;
+    secs.forEach(function(s){var r=s.getBoundingClientRect();if(r.top<=mid) cur=s});
+    links.forEach(function(a){a.classList.toggle('on',cur&&a.getAttribute('href')==='#'+cur.id)});
+    if(secl&&cur){var l=cur.querySelector('.s-lab');if(l) secl.textContent=l.textContent.trim()}
+  }
+  window.addEventListener('scroll',tick,{passive:true});
+  window.addEventListener('resize',tick);
+  tick();
+
+  links.forEach(function(a){
+    a.addEventListener('click',function(e){
+      var t=document.querySelector(a.getAttribute('href'));
+      if(!t) return; e.preventDefault();
+      window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});
+    });
+  });
+})();
+</script>
+</body>
+</html>
