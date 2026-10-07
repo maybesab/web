@@ -191,11 +191,11 @@
   .headline s{text-decoration-thickness:0.06em;text-decoration-color:currentColor;text-underline-offset:0}
   /* Each line stays on a single line; <br> handles the line break. */
   .headline .hl-line{display:inline-block;white-space:nowrap}
-  .headline .hl-hi{display:block;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-variation-settings:normal;font-weight:700;font-size:clamp(23px,calc(1.9vw + 5px),31px);line-height:1.2;letter-spacing:-0.01em;text-transform:none;margin-bottom:.5em;color:var(--plum-deep)}
+  .headline .hl-hi{display:block;font-family:'Bricolage Grotesque',system-ui,sans-serif;font-variation-settings:normal;font-weight:700;font-size:clamp(17px,calc(1.425vw + 3.75px),23px);line-height:1.2;letter-spacing:-0.01em;text-transform:none;margin-bottom:.5em;color:var(--plum-deep)}
   .headline .hl-mid{
-    display:block;white-space:normal;max-width:calc(24em + 90px);margin-bottom:.35em;
+    display:block;white-space:normal;max-width:calc(24em + 68px);margin-bottom:.35em;
     font-family:'Bricolage Grotesque',system-ui,sans-serif;font-variation-settings:normal;
-    font-weight:700;font-size:clamp(24px,calc(2.4vw + 4px),39px);line-height:1.18;letter-spacing:-0.01em;
+    font-weight:700;font-size:clamp(18px,calc(1.8vw + 3px),29px);line-height:1.18;letter-spacing:-0.01em;
     color:var(--plum-deep);text-wrap:balance;
   }
   .headline .hl-role{color:var(--plum-deep)}
@@ -1478,12 +1478,12 @@
       <div class="headline-wrap" id="headlineWrap">
         <!-- Ghosted layer always visible -->
         <h1 class="headline headline-ghost" aria-hidden="true">
-          <span class="hl-line hl-hi">Hi, I'm Sabrina</span>
+          <span class="hl-line hl-hi">I'm Sabrina,</span>
           <span class="hl-line hl-mid">A <span class="hl-role">UX Researcher &amp; Product Designer</span> with experience in human-AI interaction, trust, and PM.</span>
         </h1>
         <!-- Color layer revealed under magnifier -->
         <h1 class="headline headline-color" id="headlineColor">
-          <span class="hl-line hl-hi">Hi, I'm Sabrina</span>
+          <span class="hl-line hl-hi">I'm Sabrina,</span>
           <span class="hl-line hl-mid">A <span class="hl-role">UX Researcher &amp; Product Designer</span> with experience in human-AI interaction, trust, and PM.</span>
         </h1>
       </div>
@@ -2257,10 +2257,11 @@
       var tGrow=1.18,tLeftEdge=tl+tw2*0.055;
       tw2*=tGrow;th2=tw2*0.562;tl=tLeftEdge-tw2*0.055-30;tt=cy-th2*0.514;
       if(navL!==null&&window.innerWidth>720){var needT=(R-H.left+padX-navL)/0.853;if(tw2<needT){tw2=needT;th2=tw2*0.562;tt=cy-th2*0.514;}tl=navL-tw2*0.055;}
-      /* Shrink 65px from the top and right, then centre the visible sheet on the text. */
-      tw2+=-65/0.853;th2+=-65/0.85;
-      var cxT=(L+R)/2-H.left,cyT=(T0+B)/2-H.top;
-      tl=cxT-tw2*0.853/2-tw2*0.055;tt=cyT-th2*0.85/2-th2*0.061;
+      /* Visible sheet = text block + the same padding on every side (scales with the type). */
+      var midEl=document.querySelector('.headline .hl-mid'),fsz=midEl?parseFloat(getComputedStyle(midEl).fontSize):29;
+      var pad=fsz*1.6;
+      tw2=((R-L)+2*pad)/0.853;th2=((B-T0)+2*pad)/0.794;
+      tl=L-H.left-pad-tw2*0.055;tt=T0-H.top-pad-th2*0.117;
       tp.style.setProperty('--torn-l',tl+'px');
       tp.style.setProperty('--torn-t',tt+'px');
       tp.style.setProperty('--torn-w',tw2+'px');
