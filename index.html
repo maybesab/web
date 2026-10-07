@@ -57,7 +57,7 @@
   }
   /* Torn-paper option: a single still image positioned by fit(). */
   .torn-paper{position:absolute;left:var(--torn-l,10%);top:var(--torn-t,20%);width:var(--torn-w,80%);height:var(--torn-h,auto);z-index:0;pointer-events:none;user-select:none;display:block;filter:brightness(1.1) saturate(.75);will-change:opacity,transform;transform-origin:50% 50%}
-  .crinkle-frame[data-frame="1"]{visibility:hidden}
+  .crinkle-frame[data-frame="1"],.crinkle-frame[data-frame="2"]{visibility:hidden}
   .crinkle-frame{
     position:absolute;inset:0;
     width:100%;height:100%;
@@ -2045,9 +2045,9 @@
     // in the same window as frame 1's intro).
     const windows = [
       {inP: 0.00, peak: 0.00, outP: 0.40}, // frame 1 (flat paper) — starts at full opacity
-      {inP: 0.18, peak: 0.40, outP: 0.65}, // frame 2 (rumpled)
-      {inP: 0.40, peak: 0.65, outP: 0.88}, // frame 3 (loose ball)
-      {inP: 0.65, peak: 0.88, outP: 1.10}  // frame 4 (tight ball, holds)
+      {inP: 9, peak: 9, outP: 9},          // frame 2 (rumpled) skipped
+      {inP: 0.18, peak: 0.40, outP: 0.80}, // frame 3 (loose ball)
+      {inP: 0.55, peak: 0.80, outP: 1.10}  // frame 4 (tight ball, holds)
     ];
     frames.forEach((f, i) => {
       const w = windows[i];
@@ -2084,7 +2084,7 @@
     const flySpin = ballFade * 90;
 
     paperLayer.style.transform =
-      `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) rotate(${(spin + flySpin).toFixed(2)}deg) scale(${sc.toFixed(3)})`;
+      `translate3d(${tx.toFixed(2)}px, ${ty.toFixed(2)}px, 0) rotate(${(spin + flySpin).toFixed(2)}deg) scale(${(sc * 0.7).toFixed(3)})`;
     paperLayer.style.opacity = (1 - ballFade).toFixed(3);
     const tornEl = document.getElementById('tornPaper');
     if(tornEl){
