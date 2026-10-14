@@ -51,7 +51,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --lavender:#C9B8D9; --plum:#4A3B5C; --plum-deep:#2E2438;
-  --offwhite:#FAF7F2; --paper:#F5EFE0;
+  --offwhite:#FFFFFF; --paper:#F5EFE0;
   --yellow:#F5C842; --teal:#5BB5A8; --coral:#FF8B73;
   --navy:#00274C; --navy-deep:#0B1E36;
   --maize:#FFCB05; --maize-deep:#E0AE00;
@@ -70,7 +70,7 @@ img{display:block;max-width:100%;height:auto}
   display:flex; align-items:center; justify-content:space-between;
   gap:24px; padding:22px clamp(28px,7vw,128px);
   position:sticky; top:0; z-index:50;
-  background:rgba(250,247,242,0.85);
+  background:rgba(255,255,255,0.85);
   backdrop-filter:blur(14px) saturate(140%);
   -webkit-backdrop-filter:blur(14px) saturate(140%);
   border-bottom:1px solid rgba(74,59,92,0.08);
@@ -419,6 +419,32 @@ body.intro-locked{ overflow:hidden; }
   to{ stroke-dashoffset: 0; }
 }
 
+/* Final-prototype mockup, right of the banner title */
+.showcase-banner .sb-mock{position:absolute;z-index:2;right:clamp(28px,5vw,80px);top:50%;transform:translateY(-50%);width:min(48%,680px);margin:0;opacity:0;animation:sbMockIn .9s cubic-bezier(.2,.7,.2,1) 1s forwards}
+.showcase-banner .sb-mock img{display:block;width:100%;height:auto;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 6%,#000 94%,transparent 100%),linear-gradient(180deg,transparent 0,#000 6%,#000 94%,transparent 100%);mask-composite:intersect;filter:drop-shadow(0 24px 40px rgba(0,0,0,.35))}
+@keyframes sbMockIn{from{opacity:0;transform:translateY(calc(-50% + 18px))}to{opacity:1;transform:translateY(-50%)}}
+@media (max-width:720px){.showcase-banner .sb-mock{top:auto;bottom:18px;right:16px;width:56%;transform:none;animation:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.showcase-banner .sb-mock{animation:none;opacity:1}}
+/* Intro content now lives in the banner, left of the mockup */
+.showcase-banner.sb-hero{margin-top:0}
+.showcase-banner.sb-hero .sb-stage{height:auto;min-height:clamp(420px,50vw,640px);display:flex;align-items:center}
+.showcase-banner.sb-hero .sb-stage .sb-headline{position:relative;z-index:3;left:auto;top:auto;transform:none;max-width:none;pointer-events:auto;margin-left:clamp(28px,6vw,96px);width:calc(100% - clamp(28px,6vw,96px) - clamp(28px,5vw,80px) - min(46%,680px) - 40px);padding:clamp(48px,6vw,88px) 0}
+.showcase-banner.sb-hero .sb-mock{width:min(46%,680px)}
+.showcase-banner.sb-hero .sb-title{margin:0}
+.sb-hero .sb-sub{font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(18px,1.8vw,26px);line-height:1.3;color:rgba(255,255,255,.88);margin:18px 0 0;max-width:30ch;text-wrap:pretty}
+.sb-hero .sb-specs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 28px;margin:26px 0 24px;max-width:460px}
+.sb-hero .sb-specs dt{font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--maize)}
+.sb-hero .sb-specs dd{margin:4px 0 0;font-family:var(--serif);font-weight:500;font-size:16px;color:#fff}
+.sb-hero .sb-sub,.sb-hero .sb-specs,.sb-hero .sb-actions{opacity:0;animation:sbFadeUp .8s ease forwards}
+.sb-hero .sb-sub{animation-delay:1.4s}.sb-hero .sb-specs{animation-delay:1.55s}.sb-hero .sb-actions{animation-delay:1.7s}
+.sb-hero .btn-pill{color:#fff;border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.06)}
+.sb-hero .btn-pill:hover{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.6);color:#fff}
+.sb-hero .btn-pill.solid,.sb-hero .btn-pill.solid:hover{background:var(--maize);border-color:var(--maize);color:var(--navy)}
+@media (max-width:720px){
+  .showcase-banner.sb-hero .sb-stage{min-height:0}
+  .showcase-banner.sb-hero .sb-stage .sb-headline{width:auto;margin:0 20px;padding:40px 0 calc(56vw * .59 + 44px)}
+}
+@media (prefers-reduced-motion:reduce){.sb-hero .sb-sub,.sb-hero .sb-specs,.sb-hero .sb-actions{opacity:1;animation:none}}
 /* Floating bubbles */
 .showcase-banner .sb-bubbles{
   position:absolute; inset:0; pointer-events:none;
@@ -1990,57 +2016,9 @@ footer.case-foot{
   </div>
 </nav>
 
-<!-- ============ HERO ============ -->
-<header class="case-hero">
-  <div class="eyebrow">Case Study · Client UX Research · Fall 2024</div>
-  <h1>
-    Anchor<span class="morph-dot" aria-hidden="true">
-      <svg viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg">
-        <!-- Water droplet / ball, anchored to bottom of viewBox -->
-        <ellipse class="md-drop" cx="20" cy="52" rx="6" ry="6"></ellipse>
-        <!-- Small anchor shape, occupies the bounce-zone -->
-        <g class="md-anchor" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="20" cy="40" r="2.4" fill="none"></circle>
-          <line x1="20" y1="42.4" x2="20" y2="56"></line>
-          <line x1="15" y1="46" x2="25" y2="46"></line>
-          <path d="M 12 52 Q 12 57 20 57 Q 28 57 28 52"></path>
-        </g>
-      </svg>
-    </span>
-    <span class="small">Empowering UMSI students to achieve career success.</span>
-  </h1>
-
-  <dl class="hero-strip">
-    <dt>Duration</dt>
-    <dt>Role</dt>
-    <dt>Team</dt>
-    <dt>Tools</dt>
-    <dd>3.5 months</dd>
-    <dd>UX Researcher &amp; Designer</dd>
-    <dd>3 UX Designers</dd>
-    <dd>Figma · FigJam</dd>
-  </dl>
-
-  <p class="hero-lead">A centralized career platform for the University of Michigan School of Information — reorganizing fragmented job boards, mentorship, and events into one tool tailored to how UMSI students actually search.</p>
-
-  <div class="hero-actions">
-    <a class="btn-pill solid" href="https://medium.com/@mays5_34737/anchor-empowering-umsi-students-to-achieve-career-success-prototype-5df6de32027c" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
-      Read the paper
-    </a>
-    <a class="btn-pill" href="https://www.figma.com/proto/rrzGNB4XcRH8wrXcYi8dU1/SI-582-Project---Anchor?node-id=1492-4067&t=RmAdl2KCTepOVgnA-1&scaling=scale-down&content-scaling=fixed&page-id=1492%3A3992&starting-point-node-id=1492%3A4067" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-      Test the prototype
-    </a>
-    <a class="btn-pill" href="https://sabrinasmay.com/s/Anchor-Final-Project-Report-me8e.pdf" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path><line x1="9" y1="13" x2="15" y2="13"></line><line x1="9" y1="17" x2="13" y2="17"></line></svg>
-      Final report (PDF)
-    </a>
-  </div>
-</header>
 
 <!-- ============ HERO SHOWCASE — animated banner ============ -->
-<section class="showcase-banner" aria-label="Anchor visual banner">
+<section class="showcase-banner sb-hero" aria-label="Anchor case study introduction">
   <div class="sb-stage">
     <div class="sb-grid"></div>
     <div class="sb-waves">
@@ -2054,25 +2032,27 @@ footer.case-foot{
         <path d="M0,150 C240,120 480,180 720,150 C960,120 1200,180 1440,150 L1440,200 L0,200 Z" fill="#FFFFFF" opacity="0.10"></path>
       </svg>
     </div>
-    <div class="sb-anchor-art" aria-hidden="true">
-      <svg viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
-        <g class="sb-anchor-g" fill="none" stroke="#FFCB05" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="100" cy="28" r="14"></circle>
-          <line x1="100" y1="42" x2="100" y2="205"></line>
-          <line x1="66" y1="68" x2="134" y2="68"></line>
-          <path d="M 32 152 Q 32 215 100 215 Q 168 215 168 152"></path>
-          <line x1="32" y1="132" x2="32" y2="172"></line>
-          <line x1="168" y1="132" x2="168" y2="172"></line>
-        </g>
-      </svg>
-    </div>
+    <figure class="sb-mock"><img src="img/anchor-hero-mockup.png" width="1600" height="942" alt="Anchor's Feed, Events and Mentorship screens from the final prototype, with callouts: peers and alumni in one feed, saved jobs and groups one tap away, one calendar across three offices, mentors filtered by what you need"></figure>
     <div class="sb-bubbles" aria-hidden="true">
       <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
-    <div class="sb-headline" aria-hidden="true">
-      <div class="sb-eyebrow">UMSI · Career Platform</div>
-      <div class="sb-title">Anchor</div>
-    </div>
+    <div class="sb-headline">
+      <div class="sb-eyebrow">Case Study · Client UX Research · Fall 2024</div>
+      <h1 class="sb-title">Anchor</h1>
+      <p class="sb-sub">Empowering UMSI students to achieve career success.</p>
+      <dl class="sb-specs"><div><dt>Duration</dt><dd>3.5 months</dd></div><div><dt>Role</dt><dd>UX Researcher &amp; Designer</dd></div><div><dt>Team</dt><dd>3 UX Designers</dd></div><div><dt>Tools</dt><dd>Figma · FigJam</dd></div></dl>
+      <div class="hero-actions sb-actions">
+    <a class="btn-pill solid" href="https://medium.com/@mays5_34737/anchor-empowering-umsi-students-to-achieve-career-success-prototype-5df6de32027c" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6"></path></svg>
+      Read the paper
+    </a>
+    <a class="btn-pill" href="https://www.figma.com/proto/rrzGNB4XcRH8wrXcYi8dU1/SI-582-Project---Anchor?node-id=1492-4067&t=RmAdl2KCTepOVgnA-1&scaling=scale-down&content-scaling=fixed&page-id=1492%3A3992&starting-point-node-id=1492%3A4067" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+      Test the prototype
+    </a>
+    
+  </div>
+    </div>div>
   </div>
 </section>
 
@@ -2680,9 +2660,6 @@ footer.case-foot{
     <div class="sb-headline sb-headline-2" aria-hidden="true">
       <div class="sb-eyebrow">Four flows · one platform</div>
       <div class="sb-title sb-title-2">One <em>Anchor.</em></div>
-    </div>
-    <div class="sb-bubbles" aria-hidden="true">
-      <span></span><span></span><span></span><span></span><span></span><span></span>
     </div>
   </div>
 </section>

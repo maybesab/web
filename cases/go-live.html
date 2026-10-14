@@ -243,6 +243,41 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
 .rv.in{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){.rv{opacity:1;transform:none}}
 </style>
+<style id="gl-mock-css">
+.gl-mock{margin:clamp(32px,4vw,56px) 0 0}
+.gl-mock .gl-fallback{display:none;width:100%;height:auto;border-radius:16px}
+.tea-banner{--navy:#0E1A3A;--blue:#2F6BFF;--yellow:#F6C945;position:relative;overflow:hidden;border-radius:24px;container-type:inline-size;isolation:isolate;margin:0 auto;max-width:1400px;box-shadow:0 40px 80px -40px rgba(5,12,35,.6)}
+.gl-hero{aspect-ratio:16/9.4;background:linear-gradient(180deg,#CFE6FA 0%,#F2F5FA 100%)}
+.gl-hero::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-30%;height:60%;z-index:-1;background-color:#C9D3E3;background-image:linear-gradient(rgb(255 255 255 / .55) 1px,transparent 1px),linear-gradient(90deg,rgb(255 255 255 / .55) 1px,transparent 1px);background-size:4.6cqw 4.6cqw;transform:perspective(60cqw) rotateX(64deg);transform-origin:50% 100%;-webkit-mask-image:linear-gradient(0deg,#000 25%,transparent 85%);mask-image:linear-gradient(0deg,#000 25%,transparent 85%)}
+.gl-hero .win{background:#fff;border-radius:1.1cqw;overflow:hidden;box-shadow:0 1.8cqw 4cqw rgba(5,12,35,.45),0 .4cqw 1cqw rgba(5,12,35,.25)}
+.gl-hero .win__bar{height:1.9cqw;display:flex;align-items:center;gap:.45cqw;padding:0 .9cqw;background:#F4F6FA;border-bottom:1px solid #E3E8F0}
+.gl-hero .win__bar i{width:.62cqw;height:.62cqw;border-radius:50%;background:#D3D9E4}
+.gl-hero .win__bar i:first-child{background:#FF6B5B}.gl-hero .win__bar i:nth-child(2){background:#F6C945}.gl-hero .win__bar i:nth-child(3){background:#1FB892}
+.gl-hero .win__bar span{margin-left:auto;margin-right:auto;transform:translateX(-1.2cqw);font:600 .78cqw/1 "IBM Plex Mono",ui-monospace,monospace;color:#8A94A8;letter-spacing:.02em}
+.gl-hero .hm-main{position:absolute;left:6cqw;top:10%;width:62cqw;z-index:2;perspective:140cqw}
+.gl-hero .hm-main .win{transform:rotateY(-7deg) rotateX(3deg);transform-origin:30% 50%;box-shadow:0 3.4cqw 7cqw rgba(14,26,58,.30),0 .8cqw 1.8cqw rgba(14,26,58,.18)}
+.gl-hero .hm-back{position:absolute;right:4cqw;top:7%;width:31cqw;z-index:1;transform:rotate(4deg);opacity:.96}
+.gl-hero .hm-front{position:absolute;right:5cqw;bottom:8%;width:35cqw;z-index:3;transform:rotate(-3deg)}
+.gl-hero .hm-front .win,.gl-hero .hm-back .win{box-shadow:0 2.4cqw 5cqw rgba(14,26,58,.28),0 .6cqw 1.4cqw rgba(14,26,58,.16)}
+.gl-hero .shot{position:relative}
+.gl-hero .pin{position:absolute;z-index:4;display:flex;align-items:center;gap:.7cqw;transform:translate(-50%,-50%)}
+.gl-hero .pin b{flex:none;width:2.2cqw;height:2.2cqw;border-radius:.55cqw;display:grid;place-items:center;font:600 1.05cqw/1 "IBM Plex Mono",ui-monospace,monospace;color:var(--navy);background:var(--yellow);box-shadow:inset .25cqw .25cqw 0 rgba(255,255,255,.6),0 .5cqw 1.2cqw rgba(14,26,58,.25)}
+.gl-hero .pin span,.gl-hero .tag{white-space:nowrap;padding:.65cqw 1cqw;border-radius:99cqw;background:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.95);-webkit-backdrop-filter:blur(14px) saturate(140%);backdrop-filter:blur(14px) saturate(140%);box-shadow:0 .8cqw 2cqw rgba(14,26,58,.16);font:600 1.05cqw/1.15 "Plus Jakarta Sans",system-ui,sans-serif;color:var(--navy)}
+.gl-hero .tag{position:absolute;z-index:4;display:inline-flex;align-items:center;gap:.6cqw}
+.gl-hero .tag::before{content:"";width:.9cqw;height:.9cqw;border-radius:.25cqw;background:var(--blue);box-shadow:inset .15cqw .15cqw 0 rgba(255,255,255,.6)}
+.gl-hero .hm-front .tag{left:1.6cqw;top:-1.6cqw}.gl-hero .hm-back .tag{right:1.4cqw;top:-1.6cqw}
+.gl-hero .hm-front .tag::before{background:#F6C945}
+.gl-hero .live{position:relative;aspect-ratio:16/10;overflow:hidden;container-type:inline-size;background:#0E1A3A}
+.gl-hero .live iframe{position:absolute;top:0;left:0;width:1440px;height:900px;border:0;transform-origin:0 0;opacity:0;transition:opacity .3s ease;background:#fff;pointer-events:none}
+.gl-hero .live.is-loaded iframe{opacity:1}
+.gl-hero .live-poster{position:absolute;inset:0;display:grid;place-content:center;justify-items:center;gap:max(8px,2cqw);text-align:center;background:radial-gradient(60% 70% at 50% 40%,rgb(47 107 255 / .3),rgb(47 107 255 / 0) 70%),#0E1A3A;color:#F4F6FB}
+.gl-hero .live.is-loaded .live-poster{opacity:0;visibility:hidden;transition:opacity .3s ease,visibility 0s linear .3s}
+.gl-hero .live-chip{display:inline-flex;align-items:center;gap:.5em;padding:.35em .85em;border-radius:999px;background:rgb(255 255 255 / .12);border:1px solid rgb(255 255 255 / .25);font-weight:600;font-size:max(10px,2.2cqw);line-height:1.2}
+.gl-hero .live-chip::before{content:"";width:.55em;height:.55em;border-radius:50%;background:#1FB892}
+.gl-hero .live-name{font-weight:800;font-size:max(16px,6cqw);line-height:1;letter-spacing:-.02em}
+.gl-mock figcaption{margin-top:14px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+@media (max-width:699px){.gl-mock .tea-banner{display:none}.gl-mock .gl-fallback{display:block}}
+</style>
 </head>
 <body>
 
@@ -279,13 +314,10 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
 
 <header class="hero">
   <div class="wrap">
-    <div class="h-eyebrow mono"><span class="dot"></span>Design Intervention 01 &middot; Enterprise UX</div>
+    <div class="h-eyebrow" style="font-size:16px;letter-spacing:0;text-transform:none;color:#FFFFFF">ʕ•ᴥ•ʔっ From my time at Epic, I made...</div>
     <h1>Go Live Companion</h1>
     <p class="lede">An operational companion that carries a project manager's context through a hospital software go live, from onsite orientation to a verified correction.</p>
     <div class="h-actions">
-      <a class="btn btn-fill" href="https://maybesab.github.io/Go-Live-/" target="_blank" rel="noopener">Open the working build
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-      </a>
       <a class="btn btn-ghost" href="https://www.figma.com/board/IAUcR1b5uCFWMPvw8deSbZ/Untitled?node-id=0-1" target="_blank" rel="noopener">See the FigJam
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
       </a>
@@ -298,6 +330,15 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
       <div><dt>Tools</dt><dd>FigJam, Figma, Claude</dd></div>
       <div><dt>Data</dt><dd>Synthetic. No client data.</dd></div>
     </dl>
+    <figure class="gl-mock">
+      <div class="tea-banner gl-hero" role="img" aria-label="Waypoint live views: a discrepancy reported from the map, an amendment awaiting verification, and today's brief">
+        <div class="hm-back" aria-hidden="true"><span class="tag">Today's brief</span><div class="win"><div class="win__bar"><i></i><i></i><i></i></div><div class="live" data-src="waypoint.html?embed=1#today" aria-hidden="true"><div class="live-poster"><span class="live-chip">Live prototype</span><span class="live-name">Today</span></div></div></div></div>
+        <div class="hm-main" aria-hidden="true"><div class="win"><div class="win__bar"><i></i><i></i><i></i><span>Waypoint</span></div><div class="shot"><div class="live" data-src="waypoint.html?embed=1#discrepancy" aria-hidden="true"><div class="live-poster"><span class="live-chip">Live prototype</span><span class="live-name">Discrepancy</span></div></div><div class="pin" style="left:38%;top:42%"><b>1</b><span>Report from the map, context attached</span></div><div class="pin" style="left:62%;top:70%"><b>2</b><span>Ownership always named</span></div></div></div></div>
+        <div class="hm-front" aria-hidden="true"><span class="tag">Amended, awaiting verification</span><div class="win"><div class="win__bar"><i></i><i></i><i></i></div><div class="live" data-src="waypoint.html?embed=1#amendment" aria-hidden="true"><div class="live-poster"><span class="live-chip">Live prototype</span><span class="live-name">Amendment</span></div></div></div></div>
+      </div>
+      <img class="gl-fallback" src="../img/golive/cover-waypoint.webp" alt="Waypoint on a laptop: the Miami General Hospital floor plan with a discrepancy report panel">
+      <figcaption>Live views from the working build. All hospital, device, and staff data is synthetic.</figcaption>
+    </figure>
   </div>
 </header>
 
@@ -687,9 +728,6 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
           <li class="hot"><b>Step 04</b><span>Built with Claude</span></li>
           <li class="hot"><b>Step 05</b><span>Working prototype</span></li>
         </ul>
-        <a class="btn btn-fill" style="margin-top:20px;background:var(--navy);color:var(--cyan)" href="https://maybesab.github.io/Go-Live-/" target="_blank" rel="noopener">Open Miami General
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-        </a>
       </div>
     </div>
     <figure class="art rv" style="margin-top:clamp(30px,3.6vw,48px)">
@@ -764,6 +802,24 @@ section{padding:clamp(64px,8vw,116px) 0;position:relative}
       window.scrollTo({top:t.getBoundingClientRect().top+window.scrollY-70,behavior:'smooth'});
     });
   });
+})();
+</script>
+<script>
+(function(){
+  var lives=document.querySelectorAll('.gl-hero .live[data-src]'); if(!lives.length) return;
+  function fit(el){ var f=el.querySelector('iframe'); if(f) f.style.transform='scale('+(el.clientWidth/1440)+')'; }
+  var ro='ResizeObserver' in window ? new ResizeObserver(function(es){ es.forEach(function(e){ fit(e.target); }); }) : null;
+  function load(el){
+    if(el.querySelector('iframe') || window.innerWidth<700) return;
+    var f=document.createElement('iframe'); f.title='Waypoint view'; f.tabIndex=-1; f.setAttribute('aria-hidden','true');
+    f.addEventListener('load',function(){ el.classList.add('is-loaded'); });
+    f.src=el.dataset.src; el.prepend(f); fit(el); if(ro) ro.observe(el);
+  }
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){ es.forEach(function(e){ if(e.isIntersecting){ load(e.target); io.unobserve(e.target); } }); },{rootMargin:'200px 0px'});
+    lives.forEach(function(el){ io.observe(el); });
+  } else lives.forEach(load);
+  window.addEventListener('resize',function(){ lives.forEach(function(el){ load(el); fit(el); }); });
 })();
 </script>
 </body>
