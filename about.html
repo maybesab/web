@@ -28,7 +28,7 @@
     --lavender:#C9B8D9;
     --plum:#4A3B5C;
     --plum-deep:#2E2438;
-    --offwhite:#FAF7F2;
+    --offwhite:#FFFFFF;
     --paper:#F5EFE0;
     --yellow:#F5C842;
     --teal:#5BB5A8;
@@ -85,7 +85,7 @@
     transform-style:preserve-3d;
     cursor:none;
     z-index:10;
-    background-color:rgba(250,247,242,var(--hero-bg,1));
+    background-color:rgba(255,255,255,var(--hero-bg,1));
   }
 
   /* (paper-layer rules already defined in the frame-sequence block above) */
@@ -266,7 +266,7 @@
     display:flex;align-items:center;gap:28px;
     padding:14px 26px;
     border-radius:22px;
-    background:rgba(250,247,242,0.78);
+    background:rgba(255,255,255,0.78);
     backdrop-filter:blur(20px) saturate(1.4);
     -webkit-backdrop-filter:blur(20px) saturate(1.4);
     box-shadow:0 6px 20px -8px rgba(46,36,56,0.18),
@@ -454,7 +454,7 @@
     border-color: var(--plum-deep);
   }
   .see-all-btn:hover .sab-meta{
-    border-color: rgba(250,247,242,0.35);
+    border-color: rgba(255,255,255,0.35);
     opacity: .8;
   }
   /* In expanded state, rotate the chevron */
@@ -1151,7 +1151,7 @@
   #tweaks{
     position:fixed;right:20px;bottom:20px;z-index:1000;
     width:280px;max-width:calc(100vw - 32px);
-    background:rgba(250,247,242,0.96);
+    background:rgba(255,255,255,0.96);
     backdrop-filter:blur(20px) saturate(1.4);
     -webkit-backdrop-filter:blur(20px) saturate(1.4);
     border-radius:18px;
@@ -1271,7 +1271,6 @@
   <div class="nav-links">
     <a class="nav-link" href="index.html#work">Portfolio</a>
     <a class="nav-link nav-link-about" href="about.html">About</a>
-    <a class="nav-link nav-link-about" href="Design.html">Tinker</a>
   </div>
   <span class="nav-divider"></span>
   <div class="social" aria-label="Social links">
@@ -1325,6 +1324,17 @@
       .band-cert img{ width:100%; height:auto; display:block; border-radius:3px; }
       .band-cap{ margin-top:20px; font-family:var(--mono); font-size:10px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(255,255,255,0.85); }
 
+      /* Made by machine & hand */
+      .about-made{ max-width:1180px; margin:clamp(48px,6vw,80px) auto 0; padding:0 clamp(20px,5vw,40px); }
+      .made-title{ font-family:var(--serif); font-weight:700; font-size:clamp(30px,3.6vw,48px); line-height:1.05; letter-spacing:-0.02em; color:var(--plum-deep); margin:0 0 18px; }
+      .made-title .it{ font-style:italic; font-weight:600; color:#C4ADCC; }
+      .made-lead{ font-size:clamp(15px,1.2vw,17px); line-height:1.75; color:var(--plum); max-width:none; margin:0 0 clamp(24px,3vw,40px); text-wrap:pretty; }
+      .made-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:clamp(16px,2.4vw,28px); }
+      .made-vid{ margin:0; }
+      .made-vid iframe{ display:block; width:100%; aspect-ratio:16/9; border:0; border-radius:6px; background:#000; box-shadow:0 14px 30px -24px rgba(46,36,56,.45); }
+      .made-cap{ margin-top:12px; font-family:var(--mono); font-size:10px; letter-spacing:0.18em; text-transform:uppercase; color:var(--plum); opacity:.72; }
+      @media (max-width:760px){ .made-grid{ grid-template-columns:1fr; } }
+
       /* You can find me grid */
       .find-me{ max-width:1180px; margin:clamp(48px,6vw,80px) auto 0; padding:0 clamp(20px,5vw,40px); }
       .find-title{ font-family:var(--serif); font-weight:700; font-size:clamp(24px,2.6vw,34px); color:var(--plum-deep); margin:0 0 12px; }
@@ -1354,20 +1364,15 @@
         <h3 class="about-tagline">Data-driven designer,<br>research wrangler<br><span class="it" style="color:rgb(155,125,185)">&amp; part-time chaos coordinator.</span></h3>
         <div class="about-chips">
           <a class="chip" href="https://www.instagram.com/nomnomcookie.jpg/" target="_blank" rel="noopener">🍳 My cookbook</a>
-          <a class="chip" href="Design.html" target="_blank" rel="noopener">✏️ My Designs</a>
           <a class="chip" href="https://vsco.co/maybemyphotos/gallery" target="_blank" rel="noopener">📷 My camera</a>
           <a class="chip" href="https://medium.com/@mays5_34737" target="_blank" rel="noopener">📝 My Blog</a>
         </div>
         <dl class="about-mini">
-          <div><dt>Currently <span class="live-dot" aria-hidden="true"></span></dt><dd> · ReferU.AI (Intern) · Swim Coach · Primary Investigator</dd></div>
+          <div><dt>Currently</dt><dd>Center for Democracy &amp; Technology</dd></div>
           <div><dt>Previously</dt><dd>Epic Systems · MSKCC · Junior Olympics Swimmer</dd></div>
           <div><dt>Element</dt><dd><a href="https://maybesab.github.io/ATLA/index.html" target="_blank" rel="noopener">Earth &amp; Water Bender <span class="arrow">↗</span> <span style="color:rgba(46,36,56,0.6)">(test out my website)</span></a></dd></div>
           <div><dt>Certifications</dt><dd>CIPP <span style="color:rgba(46,36,56,0.6)">(in&nbsp;progress)</span> &nbsp;·&nbsp; PMI-CPMAI <span style="color:rgba(46,36,56,0.6)">(in&nbsp;progress)</span></dd></div>
         </dl>
-        <a class="about-design-link" href="Design.html">
-          ✏️ My free time designs
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>
-        </a>
       </div>
     </div>
 
@@ -1381,6 +1386,15 @@
         <div class="band-cap">PEERRS · Human Subjects Protections &nbsp;·&nbsp; RCRS · Responsible Conduct of Research &nbsp;—&nbsp; University of Michigan</div>
       </div>
     </div>
+
+    <section class="about-made" aria-labelledby="about-made-h">
+      <h3 class="made-title" id="about-made-h">Made by <span class="it">machine &amp; hand.</span></h3>
+      <p class="made-lead">I'm a certified technician in a maker space and like to laser-cut, 3D-print, and fabricate pieces with an Arduino! Unfortunately I don't really capture it in .png or .mp4.</p>
+      <div class="made-grid">
+        <figure class="made-vid"><iframe src="https://player.vimeo.com/video/412245136?h=0b60e6fb22" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="Digital fabrication reel 1"></iframe><figcaption class="made-cap">Fabrication reel · 01</figcaption></figure>
+        <figure class="made-vid"><iframe src="https://player.vimeo.com/video/414878913?h=ac84d99713" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy" title="Digital fabrication reel 2"></iframe><figcaption class="made-cap">Fabrication reel · 02</figcaption></figure>
+      </div>
+    </section>
 
     <div class="find-me">
       <h3 class="find-title">You can find me<span class="it">…</span></h3>
